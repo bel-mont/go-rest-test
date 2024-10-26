@@ -27,3 +27,5 @@ go.work.sum
 # JetBrains IDEs
 .idea/
 *.iml
+
+/bin

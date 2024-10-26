@@ -1,16 +1,17 @@
 package main
 
 import (
+	"github.com/joho/godotenv"
 	"go-rest-test/handlers"
 	"log"
 	"net/http"
 )
 
 func main() {
-	//err := godotenv.Load()
-	//if err != nil {
-	//	log.Fatalf("Error loading .env file")
-	//}
+	// loads values from .env into the system
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
+	}
 
 	// InitDb()
 
