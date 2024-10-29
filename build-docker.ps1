@@ -5,7 +5,7 @@ $imageName = "go-rest-test-postgres"
 $containerName = "go-rest-test-postgres-container"
 
 # Build the Docker image
-docker build -t $imageName -f $dockerfilePath $contextPath --no-cache
+docker build -t $imageName -f $dockerfilePath $contextPath
 
 # Check if a container with the same name is already running and stop it
 if (docker ps -a --format "{{.Names}}" | Select-String -Pattern $containerName) {

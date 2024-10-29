@@ -13,10 +13,10 @@ func main() {
 		log.Print("No .env file found")
 	}
 
-	// InitDb()
+	// Initialize server mux and register routes
+	mux := handlers.SetupRoutes()
 
-	handlers.Setup()
-
+	// Start server
 	log.Println("Server starting at http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", mux))
 }
