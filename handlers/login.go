@@ -1,9 +1,8 @@
 package handlers
 
-import "net/http"
+import "github.com/gin-gonic/gin"
 
 // Login handler
-func Login(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Login endpoint"))
+func Login(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "Login endpoint"})
 }

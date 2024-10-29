@@ -1,9 +1,10 @@
 package handlers
 
-import "net/http"
+import "github.com/gin-gonic/gin"
 
 // GetPlayerStats handler
-func GetPlayerStats(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Player stats endpoint"))
+func GetPlayerStats(c *gin.Context) {
+	// Example of retrieving a URL parameter
+	playerID := c.Param("id")
+	c.JSON(200, gin.H{"message": "Player stats endpoint", "playerID": playerID})
 }

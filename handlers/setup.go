@@ -1,20 +1,15 @@
 package handlers
 
 import (
-	http "net/http"
+	"github.com/gin-gonic/gin"
 )
 
 // SetupRoutes initializes and returns an http.ServeMux with the configured routes.
-func SetupRoutes() *http.ServeMux {
-	mux := http.NewServeMux()
-
-	// Register each endpoint with the appropriate handler
-	mux.HandleFunc("/auth/login", Login)
-	mux.HandleFunc("/leaderboard", GetLeaderboard)
-	mux.HandleFunc("/matches", SubmitMatch)
-	mux.HandleFunc("/player/", GetPlayerStats)
-	mux.HandleFunc("/matchmaking", Matchmaking)
-
+func SetupRoutes(router *gin.Engine) {
+	router.POST("/auth/login", Login)
+	router.GET("/leaderboard", GetLeaderboard)
+	router.POST("/matches", SubmitMatch)
+	router.GET("/player/:id", GetPlayerStats) // Example for dynamic route
+	router.POST("/matchmaking", Matchmaking)
 	//http.Handle("/", middleware.AuthMiddleware(http.DefaultServeMux))
-	return mux
 }

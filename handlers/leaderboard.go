@@ -1,9 +1,8 @@
 package handlers
 
-import "net/http"
+import "github.com/gin-gonic/gin"
 
 // GetLeaderboard handler
-func GetLeaderboard(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Leaderboard endpoint"))
+func GetLeaderboard(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "Leaderboard endpoint"})
 }

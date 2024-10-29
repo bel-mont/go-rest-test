@@ -1,15 +1,15 @@
 package handlers
 
-import "net/http"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // SubmitMatch handler
-func SubmitMatch(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Submit match endpoint"))
+func SubmitMatch(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "Submit match endpoint"})
 }
 
 // Matchmaking handler
-func Matchmaking(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Matchmaking endpoint"))
+func Matchmaking(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "Matchmaking endpoint"})
 }
