@@ -13,3 +13,7 @@ func SubmitMatch(c *gin.Context) {
 func Matchmaking(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Matchmaking endpoint"})
 }
+
+func GetMatches(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "Get matches endpoint"})
+}

@@ -1,0 +1,24 @@
+<!-- views/layout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ .title }}</title>
+  <meta name="description" content="{{ .description }}">
+  <meta name="keywords" content="{{ .keywords }}">
+<!--  <link rel="stylesheet" href="/static/css/style.css"> &lt;!&ndash; Common CSS file &ndash;&gt;-->
+</head>
+<body>
+<header>
+  <h1>{{ .header }}</h1> <!-- Optional shared header content -->
+</header>
+
+<!-- Placeholder for specific content on each page -->
+{{ block "content" . }}{{ end }}
+
+<footer>
+  <!-- Common footer content -->
+  <p>Footer content here</p>
+</footer>
+</body>
+</html>
