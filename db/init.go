@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"time"
@@ -12,11 +11,6 @@ import (
 
 // InitDB initializes a pgx connection pool for PostgreSQL.
 func InitDB() *pgxpool.Pool {
-	// Load environment variables from .env file
-	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found, using default environment variables")
-	}
-
 	// Retrieve database connection details from environment variables
 	dbName := os.Getenv("DB_NAME")
 	dbUser := os.Getenv("DB_USER")
