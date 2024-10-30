@@ -12,12 +12,7 @@ vet: fmt
 ## Build the binary file
 ## Remove if sqlite3 is removed. And then set CGO_ENABLED=0
 build: vet
-ifeq ($(OS),Windows_NT)
-	go env -w CGO_ENABLED=1
 	go build -o bin/ ./...
-else
-	CGO_ENABLED=1 go build -o bin/ ./...
-endif
 
 ## Remove previous build
 clean:
