@@ -1,4 +1,4 @@
-package handlers
+package html
 
 import (
 	"context"
@@ -6,18 +6,8 @@ import (
 	"net/http"
 )
 
-// SubmitMatch handler
-func SubmitMatch(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "Submit match endpoint"})
-}
-
-// Matchmaking handler
-func Matchmaking(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "Matchmaking endpoint"})
-}
-
-// GetMatches handler retrieves all matches from the database
-func GetMatches(c *gin.Context) {
+// MatchListPage Displays a list of matches
+func MatchListPage(c *gin.Context) {
 	rows, err := db.Query(context.Background(), `
 		SELECT p1.username AS player1, p2.username AS player2, 
 		       CASE WHEN m.winner_id = m.player1_id THEN p1.username ELSE p2.username END AS winner
@@ -65,6 +55,24 @@ func GetMatches(c *gin.Context) {
 		"description": "Welcome to SF6 Rankings, where you can follow matches, leaderboards, and participate in the community.",
 		"keywords":    "sf6, rankings, matches, leaderboards",
 		"header":      "SF6 Rankings",
-		"Matches":     matches, // Pass the matches data
+		"Matches":     matches,
+	})
+}
+
+func SubmitMatchPage(c *gin.Context) {
+	c.HTML(200, "submit-match", gin.H{
+		"header":      "Submit Match",
+		"title":       "Submit Match",
+		"description": "Submit a match to the SF6 Rankings database!",
+		"keywords":    "sf6, fighting games, submit match",
+	})
+}
+
+func MatchDetailPage(c *gin.Context) {
+	c.HTML(200, "match-detail", gin.H{
+		"header":      "Match Detail",
+		"title":       "Match Detail",
+		"description": "View the details of a match!",
+		"keywords":    "sf6, fighting games, match detail",
 	})
 }

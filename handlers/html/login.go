@@ -1,13 +1,13 @@
-package handlers
+package html
 
 import (
 	"github.com/gin-gonic/gin"
 )
 
-func Home(c *gin.Context) {
-	c.HTML(200, "home", gin.H{
+func LoginPage(c *gin.Context) {
+	c.HTML(200, "login", gin.H{
 		"header":      "SF6 Rankings",
-		"title":       "SF6 Rankings",
+		"title":       "SF6 Rankings - Login",
 		"description": "SF6 rankings, matches, and leaderboards!",
 		"keywords":    "sf6, fighting games, leaderboards",
 	})

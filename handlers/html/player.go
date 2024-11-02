@@ -1,4 +1,4 @@
-package handlers
+package html
 
 import (
 	"context"

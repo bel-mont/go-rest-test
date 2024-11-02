@@ -23,9 +23,7 @@ func main() {
 	setTrustedProxies(router)
 
 	// Setup routes using Gin router
-	handlers.SetupRoutes(router)
-	// Pass the database connection to handlers
-	handlers.SetDatabase(pgxObj)
+	handlers.SetupRoutes(router, pgxObj)
 
 	// Start server
 	log.Println("Server starting at http://localhost:8080")

@@ -1,0 +1,12 @@
+{{ define "matches" }}
+    {{template "publicHeader" .}}
+    <h2>Latest Matches</h2>
+    <div>
+        {{ range .Matches }}
+          <p>{{ .Player1 }} vs {{ .Player2 }} - Winner: {{ .Winner }}</p>
+        {{ else }}
+          <p>No matches available</p>
+        {{ end }}
+    </div>
+    {{template "publicFooter" .}}
+{{ end }}

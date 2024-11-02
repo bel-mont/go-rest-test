@@ -3,26 +3,32 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go-rest-test/handlers/api"
+	"go-rest-test/handlers/html"
 )
 
-var db *pgxpool.Pool
-
 // SetupRoutes initializes and returns an http.ServeMux with the configured routes.
-func SetupRoutes(router *gin.Engine) {
+func SetupRoutes(router *gin.Engine, db *pgxpool.Pool) {
 	// Load templates from the "views" folder
 	router.LoadHTMLGlob("views/**/*")
 
-	router.GET("/", Home)
-	router.GET("/players", GetPlayers) // New route to retrieve all players
-	router.POST("/auth/login", Login)
-	router.GET("/leaderboard", GetLeaderboard)
-	router.GET("/matches", GetMatches)
-	router.POST("/matches", SubmitMatch)
-	router.GET("/player/:id", GetPlayerStats) // Example for dynamic route
-	router.POST("/matchmaking", Matchmaking)
-}
+	// HTML Pages
+	router.GET("/", html.Home)
+	router.GET("/auth/login", html.LoginPage)
+	router.GET("/matches", html.MatchListPage)
+	router.GET("/matches/favorites", html.FavoritesPage)
+	router.GET("/matches/submit", html.SubmitMatchPage)
+	router.GET("/matches/:id", html.MatchDetailPage)
+	router.GET("/leaderboard", html.LeaderboardPage)
+	html.SetDB(db)
 
-// SetDatabase sets the database connection, initialized in main.go
-func SetDatabase(database *pgxpool.Pool) {
-	db = database
+	// API Endpoints (JSON)
+	//router.POST("/auth/login", html.Login)
+	//router.GET("/api/players", html.GetPlayers)
+	//router.GET("/api/leaderboard", html.GetLeaderboard)
+	//router.GET("/api/matches", html.GetMatches)
+	//router.POST("/api/matches", html.SubmitMatch)
+	//router.GET("/api/player/:id", html.GetPlayerStats)
+	//router.POST("/api/matchmaking", html.Matchmaking)
+	api.SetDB(db)
 }
