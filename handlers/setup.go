@@ -10,7 +10,7 @@ var db *pgxpool.Pool
 // SetupRoutes initializes and returns an http.ServeMux with the configured routes.
 func SetupRoutes(router *gin.Engine) {
 	// Load templates from the "views" folder
-	router.LoadHTMLGlob("views/*")
+	router.LoadHTMLGlob("views/**/*")
 
 	router.GET("/", Home)
 	router.GET("/players", GetPlayers) // New route to retrieve all players
