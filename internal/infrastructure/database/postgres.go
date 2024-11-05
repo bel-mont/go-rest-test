@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"context"
@@ -26,7 +26,6 @@ func InitDB() *pgxpool.Pool {
 	if err != nil {
 		log.Fatal("Unable to parse database configuration:", err)
 	}
-	//config.MaxConns = 10
 	config.HealthCheckPeriod = 1 * time.Minute
 
 	// Establish the connection pool

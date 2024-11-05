@@ -7,18 +7,18 @@ import (
 	"go-rest-test/handlers/html"
 )
 
-// SetupRoutes initializes and returns an http.ServeMux with the configured routes.
-func SetupRoutes(router *gin.Engine, db *pgxpool.Pool) {
+// InitRoutes initializes and returns an http.ServeMux with the configured routes.
+func InitRoutes(router *gin.Engine, db *pgxpool.Pool) {
 	// Load templates from the "views" folder
 	router.LoadHTMLGlob("views/**/*")
 
 	// HTML Pages
 	router.GET("/", html.Home)
 	router.GET("/auth/login", html.LoginPage)
-	router.GET("/matches", html.MatchListPage)
-	router.GET("/matches/favorites", html.FavoritesPage)
-	router.GET("/matches/submit", html.SubmitMatchPage)
-	router.GET("/matches/:id", html.MatchDetailPage)
+	//router.GET("/matches", html.MatchListPage)
+	//router.GET("/matches/favorites", html.FavoritesPage)
+	//router.GET("/matches/submit", html.SubmitMatchPage)
+	//router.GET("/matches/:id", html.MatchDetailPage)
 	router.GET("/leaderboard", html.LeaderboardPage)
 	html.SetDB(db)
 
