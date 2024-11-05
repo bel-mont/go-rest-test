@@ -3,6 +3,9 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"go-rest-test/internal/adapters/api"
+	"go-rest-test/internal/adapters/repository"
+	"go-rest-test/internal/adapters/web"
 	"go-rest-test/internal/infrastructure/database"
 	"log"
 	"os"
@@ -15,18 +18,36 @@ func main() {
 		log.Print("No .env file found")
 	}
 	// Initialize the database connection
-	pgxObj := database.InitDB()
-	defer pgxObj.Close() // Ensure database connection is closed when the app exits
+	pgxPool := database.InitDB()
+	defer pgxPool.Close() // Ensure database connection is closed when the app exits
 
 	// Initialize repository
-	//matchRepo := repository.NewMatchRepository(pgxObj)
+	// Set up repositories
+	playerRepo := repository.NewPlayerRepositoryPg(pgxPool)
 
 	// Initialize Gin router
 	router := gin.Default()
 	setTrustedProxies(router)
 
-	// Setup routes using Gin router
-	//handlers.InitRoutes(router, pgxObj)
+	// Load HTML templates
+	router.LoadHTMLGlob("web/views/**/*")
+
+	// Set up handlers
+	playerHandler := api.NewPlayerHandler(playerRepo)
+	playerWebHandler := web.NewPlayerWebHandler(playerRepo)
+
+	// Player routes (API)
+	apiGroup := router.Group("/api")
+	{
+		apiGroup.POST("/players", playerHandler.CreatePlayer)
+		apiGroup.GET("/players/:id", playerHandler.GetPlayerByID)
+		apiGroup.PUT("/players/:id", playerHandler.UpdatePlayer)
+		apiGroup.DELETE("/players/:id", playerHandler.DeletePlayer)
+		apiGroup.GET("/players", playerHandler.GetAllPlayers)
+	}
+
+	// Player routes (HTML)
+	router.GET("/players", playerWebHandler.RenderPlayersList)
 
 	// Set up some basic routes
 	router.GET("/ping", func(c *gin.Context) {
