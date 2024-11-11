@@ -1,11 +1,7 @@
 {{ define "players/list.gohtml" }}
     {{ template "layouts/base-header.gohtml" . }}
 
-    {{ block "title" . }}Players List{{ end }}
-
-    {{ block "header" .}}Players List{{ end }}
-
-    {{ block "content" . }}
+    {{ block "content" .players }}
       <h1>Players List</h1>
       <ul id="player-list">
           {{range .}}
@@ -15,5 +11,6 @@
           {{end}}
       </ul>
     {{ end }}
+
     {{ template "layouts/base-footer.gohtml" . }}
 {{ end }}

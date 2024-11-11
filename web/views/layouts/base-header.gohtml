@@ -1,19 +1,15 @@
 {{ define "layouts/base-header.gohtml" }}
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ block "title" . }}My Application{{ end }}</title>
-  </head>
-  <body>
-  <header>
-    <h1>
-        {{ block "header" . }}
-          My Application Header
-        {{ end }}
-    </h1>
-  </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ .title }}</title>
+</head>
+<body>
+<header>
+  <h1>{{ .header }}</h1>
+</header>
 
-  <main>
-  {{ end }}
+<main>
+{{ end }}

@@ -1,0 +1,17 @@
+{{ define "users/signup.gohtml" }}
+    {{ template "layouts/base-header.gohtml" . }}
+
+    {{ block "content" . }}
+      <form action="/api/signup" method="POST">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Sign Up</button>
+      </form>
+    {{ end }}
+
+    {{ template "layouts/base-footer.gohtml" . }}
+{{ end }}

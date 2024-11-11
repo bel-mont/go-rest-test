@@ -4,7 +4,7 @@ param (
 
 # Define the path to the .env file and the migrations folder
 $envFilePath = ".\.env"
-$migrationsFolder = "db\migrations"
+$migrationsFolder = "scripts\migrate"
 
 # Load .env file into a hashtable
 $envVars = @{}

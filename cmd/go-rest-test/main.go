@@ -24,17 +24,17 @@ func main() {
 	// Initialize repository
 	// Set up repositories
 	playerRepo := repository.NewPlayerRepositoryPg(pgxPool)
+	userRepo := repository.NewUserRepositoryPg(pgxPool)
 
 	// Initialize Gin router
 	router := gin.Default()
 	setTrustedProxies(router)
 
-	// Load HTML templates
-	router.LoadHTMLGlob("web/views/**/*")
-
 	// Set up handlers
 	playerHandler := api.NewPlayerHandler(playerRepo)
+	userHandler := api.NewUserHandler(userRepo)
 	playerWebHandler := web.NewPlayerWebHandler(playerRepo)
+	userWebHandler := web.NewUserWebHandler()
 
 	// Player routes (API)
 	apiGroup := router.Group("/api")
@@ -44,9 +44,13 @@ func main() {
 		apiGroup.PUT("/players/:id", playerHandler.UpdatePlayer)
 		apiGroup.DELETE("/players/:id", playerHandler.DeletePlayer)
 		apiGroup.GET("/players", playerHandler.GetAllPlayers)
+		apiGroup.POST("/signup", userHandler.Signup)
+		apiGroup.POST("/login", userHandler.Login)
 	}
 
 	// Player routes (HTML)
+	router.GET("/signup", userWebHandler.RenderSignupForm)
+	router.GET("/login", userWebHandler.RenderLoginForm)
 	router.GET("/players", playerWebHandler.RenderPlayersList)
 
 	// Set up some basic routes
