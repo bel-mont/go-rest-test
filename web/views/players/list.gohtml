@@ -1,20 +1,19 @@
 {{ define "players/list.gohtml" }}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Players List</title>
-</head>
-<body>
-<h1>Players List</h1>
-<ul id="player-list">
-    {{range .}}
-      <li>{{.Username}} - Level: {{.Level}} - Wins: {{.TotalWins}}</li>
-    {{else}}
-      <li>No players available</li>
-    {{end}}
-</ul>
-</body>
-</html>
-{{end}}
+    {{ template "layouts/base-header.gohtml" . }}
+
+    {{ block "title" . }}Players List{{ end }}
+
+    {{ block "header" .}}Players List{{ end }}
+
+    {{ block "content" . }}
+      <h1>Players List</h1>
+      <ul id="player-list">
+          {{range .}}
+            <li>{{.Username}} - Level: {{.Level}} - Wins: {{.TotalWins}}</li>
+          {{else}}
+            <li>No players available</li>
+          {{end}}
+      </ul>
+    {{ end }}
+    {{ template "layouts/base-footer.gohtml" . }}
+{{ end }}
