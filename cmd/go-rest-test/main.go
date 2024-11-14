@@ -36,6 +36,7 @@ func main() {
 	playerWebHandler := web.NewPlayerWebHandler(playerRepo)
 	userWebHandler := web.NewUserWebHandler()
 	homeWebHandler := web.NewHomeWebHandler()
+	replayWebHandler := web.NewReplayWebHandler()
 
 	// Player routes (API)
 	apiGroup := router.Group("/api")
@@ -54,6 +55,9 @@ func main() {
 	router.GET("/signup", userWebHandler.RenderSignupForm)
 	router.GET("/login", userWebHandler.RenderLoginForm)
 	router.GET("/players", playerWebHandler.RenderPlayersList)
+
+	// Logged in User HTML
+	router.GET("/replay", replayWebHandler.RenderIndex)
 
 	// Set up some basic routes
 	router.GET("/ping", func(c *gin.Context) {

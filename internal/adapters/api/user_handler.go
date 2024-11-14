@@ -93,5 +93,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	// Set the token as a secure, HTTP-only cookie
 	c.SetCookie("auth_token", token, 3600, "/", "", true, true) // Expires in 1 hour, secure, HTTP-only
 
+	// Set HX-Redirect header to trigger a redirect in HTMX
+	c.Header("HX-Redirect", "/replay")
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 }

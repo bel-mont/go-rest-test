@@ -2,7 +2,7 @@
     {{ template "layouts/base-header.gohtml" . }}
 
     {{ block "content" . }}
-      <form action="/api/login" method="POST">
+      <form hx-post="/api/login" hx-swap="none">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
 
