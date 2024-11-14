@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go-rest-test/internal/core/repository"
-	"html/template"
+	"go-rest-test/pkg/html"
 	"log"
 	"net/http"
 )
@@ -20,11 +20,7 @@ func NewPlayerWebHandler(repo repository.PlayerRepository) *PlayerWebHandler {
 // RenderPlayersList renders the player list as an HTML page.
 func (h *PlayerWebHandler) RenderPlayersList(c *gin.Context) {
 	// Parse the players list template with header and footer
-	tmpl, err := template.ParseFiles(
-		"web/views/players/list.gohtml",
-		"web/views/layouts/base-header.gohtml",
-		"web/views/layouts/base-footer.gohtml",
-	)
+	tmpl, err := html.BaseLayoutTemplate("web/views/players/list.gohtml")
 	if err != nil {
 		log.Printf("Error loading players list template: %v", err)
 		c.String(http.StatusInternalServerError, "Template error")

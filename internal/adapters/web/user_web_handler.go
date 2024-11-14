@@ -1,6 +1,7 @@
 package web
 
 import (
+	"go-rest-test/pkg/html"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,11 +18,7 @@ func NewUserWebHandler() *UserWebHandler {
 // RenderSignupForm renders the signup form HTML page.
 func (h *UserWebHandler) RenderSignupForm(c *gin.Context) {
 	// Parse the signup form template with header and footer
-	tmpl, err := template.ParseFiles(
-		"web/views/users/signup.gohtml",
-		"web/views/layouts/base-header.gohtml",
-		"web/views/layouts/base-footer.gohtml",
-	)
+	tmpl, err := html.BaseLayoutTemplate("web/views/users/signup.gohtml")
 	if err != nil {
 		log.Printf("Error loading signup template: %v", err)
 		c.String(http.StatusInternalServerError, "Template error")
