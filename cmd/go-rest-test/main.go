@@ -35,6 +35,7 @@ func main() {
 	userHandler := api.NewUserHandler(userRepo)
 	playerWebHandler := web.NewPlayerWebHandler(playerRepo)
 	userWebHandler := web.NewUserWebHandler()
+	homeWebHandler := web.NewHomeWebHandler()
 
 	// Player routes (API)
 	apiGroup := router.Group("/api")
@@ -49,6 +50,7 @@ func main() {
 	}
 
 	// Player routes (HTML)
+	router.GET("/", homeWebHandler.RenderHome)
 	router.GET("/signup", userWebHandler.RenderSignupForm)
 	router.GET("/login", userWebHandler.RenderLoginForm)
 	router.GET("/players", playerWebHandler.RenderPlayersList)
