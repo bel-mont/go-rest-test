@@ -97,3 +97,14 @@ func (h *UserHandler) Login(c *gin.Context) {
 	c.Header("HX-Redirect", "/replay")
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 }
+
+func (h *UserHandler) Logout(c *gin.Context) {
+	// Set the "auth_token" cookie to expire immediately
+	c.SetCookie("auth_token", "", -1, "/", "", true, true) // Negative max-age to delete the cookie
+
+	// Check if the request is from HTMX
+	if c.GetHeader("HX-Request") != "" {
+		c.Header("HX-Redirect", "/")
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
+}

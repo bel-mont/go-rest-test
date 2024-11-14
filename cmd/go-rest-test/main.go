@@ -48,6 +48,7 @@ func main() {
 		apiGroup.GET("/players", playerHandler.GetAllPlayers)
 		apiGroup.POST("/signup", userHandler.Signup)
 		apiGroup.POST("/login", userHandler.Login)
+		apiGroup.POST("/logout", userHandler.Logout)
 	}
 
 	// Player routes (HTML)
@@ -55,8 +56,6 @@ func main() {
 	router.GET("/signup", userWebHandler.RenderSignupForm)
 	router.GET("/login", userWebHandler.RenderLoginForm)
 	router.GET("/players", playerWebHandler.RenderPlayersList)
-
-	// Logged in User HTML
 	router.GET("/replay", replayWebHandler.RenderIndex)
 
 	// Set up some basic routes

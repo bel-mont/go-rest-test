@@ -15,7 +15,7 @@ func NewReplayWebHandler() *ReplayWebHandler {
 
 func (h *ReplayWebHandler) RenderIndex(c *gin.Context) {
 	// Parse the signup form template with header and footer
-	tmpl, err := html.BaseLayoutTemplate("web/views/replay/index.gohtml")
+	tmpl, err := html.LoggedLayoutTemplate("web/views/replay/index.gohtml")
 	if err != nil {
 		log.Printf("Error loading index replay template: %v", err)
 		c.String(http.StatusInternalServerError, "Template error")
