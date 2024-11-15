@@ -1,6 +1,6 @@
 # Set up variables for image and container names
-$imageName = "go-rest-test-postgres"
-$containerName = "go-rest-test-postgres-container"
+$imageName = "server-postgres"
+$containerName = "server-postgres-container"
 
 # Check if the container exists (running or stopped)
 $containerExists = docker ps -a --filter "name=$containerName" --format "{{.Names}}" | Select-String -Pattern $containerName

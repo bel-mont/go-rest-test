@@ -1,8 +1,8 @@
 # Navigate to the directory containing the Dockerfile
 $dockerfilePath = "./docker/Dockerfile.postgres"
 $contextPath = "./docker"
-$imageName = "go-rest-test-postgres"
-$containerName = "go-rest-test-postgres-container"
+$imageName = "server-postgres"
+$containerName = "server-postgres-container"
 
 # Build the Docker image
 docker build -t $imageName -f $dockerfilePath $contextPath

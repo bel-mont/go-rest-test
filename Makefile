@@ -12,7 +12,7 @@ vet: fmt
 ## Build the binary file
 ## Remove if sqlite3 is removed. And then set CGO_ENABLED=0
 build: vet
-	go build -o bin/go-rest-test.exe ./cmd/go-rest-test
+	go build -o bin/go-rest-test.exe ./cmd/server
 
 ## Remove previous build
 clean:

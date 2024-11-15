@@ -21,7 +21,7 @@ func GenerateJWT(userID int) (string, error) {
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-			Issuer:    "go-rest-test",
+			Issuer:    "server",
 		},
 	}
 
