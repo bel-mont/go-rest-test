@@ -91,7 +91,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 
 	// Set the token as a secure, HTTP-only cookie
-	c.SetCookie("auth_token", token, 3600, "/", "", true, true) // Expires in 1 hour, secure, HTTP-only
+	c.SetCookie(auth.AuthTokenCookieName, token, 3600, "/", "", true, true) // Expires in 1 hour, secure, HTTP-only
 
 	// Set HX-Redirect header to trigger a redirect in HTMX
 	c.Header("HX-Redirect", "/replay")
@@ -100,7 +100,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 func (h *UserHandler) Logout(c *gin.Context) {
 	// Set the "auth_token" cookie to expire immediately
-	c.SetCookie("auth_token", "", -1, "/", "", true, true) // Negative max-age to delete the cookie
+	c.SetCookie(auth.AuthTokenCookieName, "", -1, "/", "", true, true) // Negative max-age to delete the cookie
 
 	// Check if the request is from HTMX
 	if c.GetHeader("HX-Request") != "" {

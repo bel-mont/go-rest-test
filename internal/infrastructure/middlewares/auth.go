@@ -6,10 +6,11 @@ import (
 	"net/http"
 )
 
+// AuthMiddleware checks for the presence of a valid JWT token in cookies and sets the user ID in the request context.
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Retrieve the token from the cookie
-		token, err := c.Cookie("auth_token")
+		token, err := c.Cookie(auth.AuthTokenCookieName)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
