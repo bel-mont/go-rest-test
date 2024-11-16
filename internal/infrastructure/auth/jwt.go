@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"os"
 	"time"
 
@@ -46,4 +47,14 @@ func ValidateJWT(tokenStr string) (*Claims, error) {
 	}
 
 	return claims, nil
+}
+
+// IsUserAuthenticated checks if the user is authenticated from the context and returns it as a boolean.
+func IsUserAuthenticated(c *gin.Context) bool {
+	value, exists := c.Get(UserAuthenticatedKey)
+	if !exists {
+		return false
+	}
+	isAuthenticated, ok := value.(bool)
+	return ok && isAuthenticated
 }

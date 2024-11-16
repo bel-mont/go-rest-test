@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go-rest-test/internal/core/repository"
+	"go-rest-test/internal/infrastructure/auth"
 	"go-rest-test/pkg/html"
 	"log"
 	"net/http"
@@ -27,6 +28,9 @@ func (h *PlayerWebHandler) RenderPlayersList(c *gin.Context) {
 		return
 	}
 
+	// Render the signup form template
+	isAuthenticated := auth.IsUserAuthenticated(c)
+
 	// Retrieve players from the repository
 	players, err := h.repo.GetAllPlayers(context.Background())
 	if err != nil {
@@ -39,9 +43,10 @@ func (h *PlayerWebHandler) RenderPlayersList(c *gin.Context) {
 	}
 
 	data := gin.H{
-		"players": players,
-		"title":   "Players",
-		"header":  "Players",
+		"players":           players,
+		"title":             "Players",
+		"header":            "Players",
+		"UserAuthenticated": isAuthenticated,
 	}
 	// Render the template with players data
 	err = tmpl.ExecuteTemplate(c.Writer, "players/list.gohtml", data)

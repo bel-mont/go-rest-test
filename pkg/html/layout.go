@@ -10,11 +10,3 @@ func BaseLayoutTemplate(templateFiles ...string) (*template.Template, error) {
 
 	return template.ParseFiles(allFiles...)
 }
-
-func LoggedLayoutTemplate(templateFiles ...string) (*template.Template, error) {
-	loggedHeader := "web/views/layouts/logged-header.gohtml"
-	loggedFooter := "web/views/layouts/logged-footer.gohtml"
-	allFiles := append([]string{loggedHeader, loggedFooter}, templateFiles...)
-
-	return template.ParseFiles(allFiles...)
-}

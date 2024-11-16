@@ -1,6 +1,7 @@
 package web
 
 import (
+	"go-rest-test/internal/infrastructure/auth"
 	"go-rest-test/pkg/html"
 	"html/template"
 	"log"
@@ -26,9 +27,13 @@ func (h *UserWebHandler) RenderSignupForm(c *gin.Context) {
 	}
 
 	// Render the signup form template
+	isAuthenticated := auth.IsUserAuthenticated(c)
+
+	// Render the signup form template
 	data := gin.H{
-		"title":  "Sign Up",
-		"header": "Sign Up",
+		"title":             "Sign Up",
+		"header":            "Sign Up",
+		"UserAuthenticated": isAuthenticated,
 	}
 	err = tmpl.ExecuteTemplate(c.Writer, "users/signup.gohtml", data)
 	if err != nil {

@@ -2,6 +2,7 @@ package web
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-rest-test/internal/infrastructure/auth"
 	"go-rest-test/pkg/html"
 	"log"
 	"net/http"
@@ -23,9 +24,11 @@ func (h *HomeWebHandler) RenderHome(c *gin.Context) {
 	}
 
 	// Render the signup form template
+	isAuthenticated := auth.IsUserAuthenticated(c)
 	data := gin.H{
-		"title":  "FG Replay Analyzer",
-		"header": "FG Replay Analyzer",
+		"title":             "FG Replay Analyzer",
+		"header":            "FG Replay Analyzer",
+		"UserAuthenticated": isAuthenticated,
 	}
 	err = tmpl.ExecuteTemplate(c.Writer, "home.gohtml", data)
 	if err != nil {
