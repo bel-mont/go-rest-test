@@ -3,9 +3,25 @@
   </main>
 
     {{ block "footer" . }}
-      <footer>
-        <p>&copy; 2024 My Application</p>
-      </footer>
+      <footer class="bg-gray-800 mt-auto">
+      <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Company Info -->
+          <div>
+            <h3 class="text-white text-lg font-semibold mb-4">FG Replay Analyzer</h3>
+            <p class="text-gray-300">&copy; 2024 All rights reserved.</p>
+          </div>
+          
+          <!-- Quick Links -->
+          <div>
+            <h3 class="text-white text-lg font-semibold mb-4">Quick Links</h3>
+            <ul class="space-y-2">
+              <li><a href="/" class="text-gray-300 hover:text-white">Home</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
     {{ end }}
     </body>
     </html>
