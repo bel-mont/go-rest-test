@@ -4,7 +4,7 @@
   "description": "If the imports are not working in Goland, make sure to enable Go Modules in the IDE settings.",
   "license": "ISC",
   "devDependencies": {
-    "serverless-dynamodb-local": "^0.2.40",
+    "serverless-dynamodb-local": "^1.0.2",
     "serverless-offline": "^14.3.4"
   }
 }
