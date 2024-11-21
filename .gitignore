@@ -29,3 +29,7 @@ go.work.sum
 *.iml
 
 /bin
+
+#Serverless files
+/node_modules/
+.serverless/
