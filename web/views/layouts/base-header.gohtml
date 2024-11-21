@@ -15,6 +15,7 @@
     <div class="flex justify-between h-16">
       <ul class="flex items-center space-x-4">
         <li><a href="/" class="text-gray-700 hover:text-gray-900">Home</a></li>
+        <li><a href="/replay" class="text-gray-700 hover:text-gray-900">Replays</a></li>
         {{ if .UserAuthenticated }}
           <li><button class="text-gray-700 hover:text-gray-900" hx-post="/api/logout" hx-swap="none">Log Out</button></li>
         {{ else }}

@@ -1,6 +1,7 @@
-.DEFAULT_GOAL := build
+.DEFAULT_GOAL := offline
 
-.PHONY: fmt vet build bin
+.PHONY: fmt vet build clean offline
+
 ## Run go fmt against code
 fmt:
 	go fmt ./...
@@ -9,16 +10,18 @@ fmt:
 vet: fmt
 	go vet ./...
 
-## Build the binary file
-## Remove if sqlite3 is removed. And then set CGO_ENABLED=0
+## Build the Linux-compatible binary for local serverless testing
 build: vet
-	go build -o bin/go-rest-test.exe ./cmd/server
+	set GOOS=linux& set GOARCH=amd64& set CGO_ENABLED=0& go build -o bin/go-rest-test ./cmd/server
 
-## Remove previous build
+## Clean up previous builds
 clean:
-	go clean
-ifeq ($(OS),Windows_NT)
-	rmdir /s /q bin
-else
 	rm -rf bin/
-endif
+
+## Start local DynamoDB
+dynamo:
+	docker run -d --name server-dynamodb-container -p 8000:8000 amazon/dynamodb-local
+
+## Run the application locally using Serverless Offline
+offline: build
+	set ENV=local& serverless offline start --stage local --debug

@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-rest-test/internal/core/entities"
 	"go-rest-test/internal/core/repository"
-	utils "go-rest-test/pkg/util"
 	"net/http"
 )
 
@@ -34,12 +33,7 @@ func (h *PlayerHandler) CreatePlayer(c *gin.Context) {
 }
 
 func (h *PlayerHandler) GetPlayerByID(c *gin.Context) {
-	id, err := utils.ParseID(c, "id")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+	id := c.Param("id")
 	player, err := h.repo.GetPlayerByID(context.Background(), id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
@@ -67,13 +61,9 @@ func (h *PlayerHandler) UpdatePlayer(c *gin.Context) {
 }
 
 func (h *PlayerHandler) DeletePlayer(c *gin.Context) {
-	id, err := utils.ParseID(c, "id")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	id := c.Param("id")
 
-	err = h.repo.DeletePlayer(context.Background(), id)
+	err := h.repo.DeletePlayer(context.Background(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete player"})
 		return

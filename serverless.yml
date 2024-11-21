@@ -1,0 +1,43 @@
+service: go-rest-test
+
+provider:
+  name: aws
+  runtime: provided.al2
+  environment:
+    # Stage-specific environments
+    ENV: ${opt:stage, 'local'}  # Use --stage parameter or default to 'local'
+    AWS_REGION: ${opt:region, 'local'}  # Use --region parameter or default to 'local'
+    DATABASE_URL: http://localhost:8000
+    DYNAMODB_ENDPOINT: ${self:custom.dynamodb.endpoint}
+
+functions:
+  app:
+    handler: bin/go-rest-test # This must match your binary name
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+
+plugins:
+  - serverless-offline
+  - serverless-dynamodb-local
+
+custom:
+  dynamodb:
+    endpoint: ${env:DYNAMODB_ENDPOINT, 'http://localhost:8000'}
+    stages:
+      - dev
+    start:
+      # Use Docker to run DynamoDB Local (instead of downloading Java file)
+      docker: true
+      port: 8000
+      # Run in memory instead of creating database files
+      # true: Data is lost when container stops
+      # false: Data persists between restarts (slower)
+      inMemory: true
+      # Automatically run table migrations on startup
+      # true: Creates tables defined in serverless.yml
+      # false: You need to create tables manually
+      migrate: false
+  serverless-offline:
+    httpPort: 3000

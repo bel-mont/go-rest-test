@@ -5,13 +5,14 @@ import (
 	"errors"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go-rest-test/internal/core/entities"
+	"go-rest-test/internal/core/repository"
 )
 
 type UserRepositoryPg struct {
 	db *pgxpool.Pool
 }
 
-func NewUserRepositoryPg(db *pgxpool.Pool) *UserRepositoryPg {
+func NewUserRepositoryPg(db *pgxpool.Pool) repository.UserRepository {
 	return &UserRepositoryPg{db: db}
 }
 

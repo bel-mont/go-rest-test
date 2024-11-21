@@ -6,9 +6,9 @@ import (
 )
 
 type PlayerRepository interface {
-	CreatePlayer(ctx context.Context, player entities.Player) (int, error)
-	GetPlayerByID(ctx context.Context, id int) (entities.Player, error)
+	CreatePlayer(ctx context.Context, player entities.Player) (string, error)
+	GetPlayerByID(ctx context.Context, id string) (entities.Player, error)
 	UpdatePlayer(ctx context.Context, player entities.Player) error
-	DeletePlayer(ctx context.Context, id int) error
+	DeletePlayer(ctx context.Context, id string) error
 	GetAllPlayers(ctx context.Context) ([]entities.Player, error)
 }

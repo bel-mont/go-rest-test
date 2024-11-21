@@ -16,7 +16,7 @@ func NewPlayerRepositoryPg(db *pgxpool.Pool) repository.PlayerRepository {
 	return &PlayerRepositoryPg{db: db}
 }
 
-func (r *PlayerRepositoryPg) GetPlayerByID(ctx context.Context, id int) (entities.Player, error) {
+func (r *PlayerRepositoryPg) GetPlayerByID(ctx context.Context, id string) (entities.Player, error) {
 	var player entities.Player
 	query := `
 		SELECT id, username, level, total_matches, total_wins, last_login
@@ -45,7 +45,7 @@ func (r *PlayerRepositoryPg) UpdatePlayer(ctx context.Context, player entities.P
 	return nil
 }
 
-func (r *PlayerRepositoryPg) DeletePlayer(ctx context.Context, id int) error {
+func (r *PlayerRepositoryPg) DeletePlayer(ctx context.Context, id string) error {
 	query := `
 		DELETE FROM players
 		WHERE id = $1
@@ -88,8 +88,8 @@ func (r *PlayerRepositoryPg) GetAllPlayers(ctx context.Context) ([]entities.Play
 	return players, nil
 }
 
-func (r *PlayerRepositoryPg) CreatePlayer(ctx context.Context, player entities.Player) (int, error) {
-	var id int
+func (r *PlayerRepositoryPg) CreatePlayer(ctx context.Context, player entities.Player) (string, error) {
+	var id string
 	query := `
         INSERT INTO players (username, level, total_matches, total_wins, last_login)
         VALUES ($1, $2, $3, $4, $5)
@@ -98,7 +98,7 @@ func (r *PlayerRepositoryPg) CreatePlayer(ctx context.Context, player entities.P
 	err := r.db.QueryRow(ctx, query, player.Username, player.Level, player.TotalMatches, player.TotalWins, player.LastLogin).Scan(&id)
 	if err != nil {
 		log.Println("Error creating player:", err)
-		return 0, err
+		return "", err
 	}
 	return id, nil
 }

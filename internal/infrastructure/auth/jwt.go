@@ -12,12 +12,12 @@ import (
 var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 type Claims struct {
-	UserID int `json:"user_id"`
+	UserID string `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
 // GenerateJWT generates a new JWT for the specified user ID.
-func GenerateJWT(userID int) (string, error) {
+func GenerateJWT(userID string) (string, error) {
 	claims := &Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
