@@ -10,11 +10,11 @@ import (
 
 type ReplayWebHandler struct{}
 
-func NewReplayWebHandler() *ReplayWebHandler {
-	return &ReplayWebHandler{}
+func NewReplayWebHandler() ReplayWebHandler {
+	return ReplayWebHandler{}
 }
 
-func (h *ReplayWebHandler) RenderIndex(c *gin.Context) {
+func (h ReplayWebHandler) RenderIndex(c *gin.Context) {
 	// Parse the signup form template with header and footer
 	tmpl, err := html.BaseLayoutTemplate("web/views/replay/index.gohtml")
 	if err != nil {

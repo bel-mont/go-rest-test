@@ -10,11 +10,11 @@ import (
 
 type HomeWebHandler struct{}
 
-func NewHomeWebHandler() *HomeWebHandler {
-	return &HomeWebHandler{}
+func NewHomeWebHandler() HomeWebHandler {
+	return HomeWebHandler{}
 }
 
-func (h *HomeWebHandler) RenderHome(c *gin.Context) {
+func (h HomeWebHandler) RenderHome(c *gin.Context) {
 	// Parse the signup form template with header and footer
 	tmpl, err := html.BaseLayoutTemplate("web/views/index.gohtml")
 	if err != nil {

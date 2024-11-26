@@ -2,7 +2,9 @@ package api
 
 import (
 	"context"
+	"errors"
 	"github.com/gin-gonic/gin"
+	repository2 "go-rest-test/internal/adapters/repository"
 	"go-rest-test/internal/core/entities"
 	"go-rest-test/internal/core/repository"
 	"go-rest-test/internal/infrastructure/auth"
@@ -13,12 +15,12 @@ type UserHandler struct {
 	userRepo repository.UserRepository
 }
 
-func NewUserHandler(userRepo repository.UserRepository) *UserHandler {
-	return &UserHandler{userRepo: userRepo}
+func NewUserHandler(userRepo repository.UserRepository) UserHandler {
+	return UserHandler{userRepo: userRepo}
 }
 
 // Signup handles user registration
-func (h *UserHandler) Signup(c *gin.Context) {
+func (h UserHandler) Signup(c *gin.Context) {
 	// Define a struct for binding both JSON and form data
 	var input struct {
 		Email    string `form:"email" json:"email" binding:"required,email"`
@@ -32,8 +34,8 @@ func (h *UserHandler) Signup(c *gin.Context) {
 	}
 
 	// Check if user already exists
-	existingUser, _ := h.userRepo.GetUserByEmail(context.Background(), input.Email)
-	if existingUser != nil {
+	_, err := h.userRepo.GetUserByEmail(context.Background(), input.Email)
+	if !errors.Is(err, repository2.ErrUserNotFound) {
 		c.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
 		return
 	}
@@ -52,15 +54,26 @@ func (h *UserHandler) Signup(c *gin.Context) {
 	}
 
 	// Save the user in the database
-	if err := h.userRepo.CreateUser(context.Background(), &user); err != nil {
+	_, err = h.userRepo.CreateUser(context.Background(), user)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
+	token, err := auth.GenerateJWT(user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	// Set the token as a secure, HTTP-only cookie
+	c.SetCookie(auth.AuthTokenCookieName, token, 3600, "/", "", true, true) // Expires in 1 hour, secure, HTTP-only
+
+	c.Header("HX-Redirect", "/replay")
 	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
-func (h *UserHandler) Login(c *gin.Context) {
+func (h UserHandler) Login(c *gin.Context) {
 	var input struct {
 		Email    string `form:"email" json:"email" binding:"required,email"`
 		Password string `form:"password" json:"password" binding:"required,min=8"`
@@ -98,7 +111,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 }
 
-func (h *UserHandler) Logout(c *gin.Context) {
+func (h UserHandler) Logout(c *gin.Context) {
 	// Set the "auth_token" cookie to expire immediately
 	c.SetCookie(auth.AuthTokenCookieName, "", -1, "/", "", true, true) // Negative max-age to delete the cookie
 

@@ -29,7 +29,7 @@ func NewPlayerRepositoryDynamoDB(client *dynamodb.Client) repository.PlayerRepos
 }
 
 // GetPlayerByID retrieves a player from the DynamoDB table by ID.
-func (r *PlayerRepositoryDynamoDB) GetPlayerByID(ctx context.Context, id string) (entities.Player, error) {
+func (r PlayerRepositoryDynamoDB) GetPlayerByID(ctx context.Context, id string) (entities.Player, error) {
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(r.tableName),
 		Key: map[string]types.AttributeValue{
@@ -55,7 +55,7 @@ func (r *PlayerRepositoryDynamoDB) GetPlayerByID(ctx context.Context, id string)
 }
 
 // UpdatePlayer updates an existing player record in the DynamoDB table using the provided player entity.
-func (r *PlayerRepositoryDynamoDB) UpdatePlayer(ctx context.Context, player entities.Player) error {
+func (r PlayerRepositoryDynamoDB) UpdatePlayer(ctx context.Context, player entities.Player) error {
 	av, err := attributevalue.MarshalMap(player)
 	if err != nil {
 		return fmt.Errorf("failed to marshal player: %w", err)
@@ -75,7 +75,7 @@ func (r *PlayerRepositoryDynamoDB) UpdatePlayer(ctx context.Context, player enti
 }
 
 // DeletePlayer deletes a player from DynamoDB by player ID. Returns an error if the deletion fails.
-func (r *PlayerRepositoryDynamoDB) DeletePlayer(ctx context.Context, id string) error {
+func (r PlayerRepositoryDynamoDB) DeletePlayer(ctx context.Context, id string) error {
 	input := &dynamodb.DeleteItemInput{
 		TableName: aws.String(r.tableName),
 		Key: map[string]types.AttributeValue{
@@ -92,7 +92,7 @@ func (r *PlayerRepositoryDynamoDB) DeletePlayer(ctx context.Context, id string) 
 }
 
 // GetAllPlayers retrieves all players from the DynamoDB table.
-func (r *PlayerRepositoryDynamoDB) GetAllPlayers(ctx context.Context) ([]entities.Player, error) {
+func (r PlayerRepositoryDynamoDB) GetAllPlayers(ctx context.Context) ([]entities.Player, error) {
 	input := &dynamodb.ScanInput{
 		TableName: aws.String(r.tableName),
 	}
@@ -111,7 +111,7 @@ func (r *PlayerRepositoryDynamoDB) GetAllPlayers(ctx context.Context) ([]entitie
 }
 
 // CreatePlayer creates a new player record in DynamoDB and returns the player ID or an error.
-func (r *PlayerRepositoryDynamoDB) CreatePlayer(ctx context.Context, player entities.Player) (string, error) {
+func (r PlayerRepositoryDynamoDB) CreatePlayer(ctx context.Context, player entities.Player) (string, error) {
 	player.ID = uuid.New().String()
 	player.LastLogin = time.Now()
 

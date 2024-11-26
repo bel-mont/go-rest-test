@@ -31,7 +31,7 @@ func InitializeRoutes(router *gin.Engine, playerRepo repository.PlayerRepository
 	setupWebRoutes(router, homeWebHandler, userWebHandler, playerWebHandler, replayWebHandler)
 }
 
-func setupAPIRoutes(router *gin.Engine, playerHandler *api.PlayerHandler, userHandler *api.UserHandler) {
+func setupAPIRoutes(router *gin.Engine, playerHandler api.PlayerHandler, userHandler api.UserHandler) {
 	apiGroup := router.Group("/api")
 	{
 		apiGroup.POST("/players", playerHandler.CreatePlayer)
@@ -45,7 +45,7 @@ func setupAPIRoutes(router *gin.Engine, playerHandler *api.PlayerHandler, userHa
 	}
 }
 
-func setupWebRoutes(router *gin.Engine, homeWebHandler *web.HomeWebHandler, userWebHandler *web.UserWebHandler, playerWebHandler *web.PlayerWebHandler, replayWebHandler *web.ReplayWebHandler) {
+func setupWebRoutes(router *gin.Engine, homeWebHandler web.HomeWebHandler, userWebHandler web.UserWebHandler, playerWebHandler web.PlayerWebHandler, replayWebHandler web.ReplayWebHandler) {
 	router.GET("/", homeWebHandler.RenderHome)
 	router.GET("/signup", userWebHandler.RenderSignupForm)
 	router.GET("/login", userWebHandler.RenderLoginForm)

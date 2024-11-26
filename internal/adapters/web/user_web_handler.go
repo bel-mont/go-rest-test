@@ -12,12 +12,12 @@ import (
 
 type UserWebHandler struct{}
 
-func NewUserWebHandler() *UserWebHandler {
-	return &UserWebHandler{}
+func NewUserWebHandler() UserWebHandler {
+	return UserWebHandler{}
 }
 
 // RenderSignupForm renders the signup form HTML page.
-func (h *UserWebHandler) RenderSignupForm(c *gin.Context) {
+func (h UserWebHandler) RenderSignupForm(c *gin.Context) {
 	// Parse the signup form template with header and footer
 	tmpl, err := html.BaseLayoutTemplate("web/views/users/signup.gohtml")
 	if err != nil {
@@ -43,7 +43,7 @@ func (h *UserWebHandler) RenderSignupForm(c *gin.Context) {
 }
 
 // RenderLoginForm renders the login form HTML page.
-func (h *UserWebHandler) RenderLoginForm(c *gin.Context) {
+func (h UserWebHandler) RenderLoginForm(c *gin.Context) {
 	// Parse the login form template with header and footer
 	tmpl, err := template.ParseFiles(
 		"web/views/users/login.gohtml",

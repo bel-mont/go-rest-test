@@ -14,12 +14,12 @@ type PlayerWebHandler struct {
 	repo repository.PlayerRepository
 }
 
-func NewPlayerWebHandler(repo repository.PlayerRepository) *PlayerWebHandler {
-	return &PlayerWebHandler{repo: repo}
+func NewPlayerWebHandler(repo repository.PlayerRepository) PlayerWebHandler {
+	return PlayerWebHandler{repo: repo}
 }
 
 // RenderPlayersList renders the player list as an HTML page.
-func (h *PlayerWebHandler) RenderPlayersList(c *gin.Context) {
+func (h PlayerWebHandler) RenderPlayersList(c *gin.Context) {
 	// Parse the players list template with header and footer
 	tmpl, err := html.BaseLayoutTemplate("web/views/players/list.gohtml")
 	if err != nil {
