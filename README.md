@@ -1,3 +1,14 @@
+# Localhost
+## Requirements
+1. Golang
+2. For windows, install "Makefile" through something like Chocolatey.
+3. Python
+
+## Running 
+1. Start localstack with `docker-compose`
+2. Start your golang program
+
+
 # Troubleshooting
 If the imports are not working in Goland, make sure to enable Go Modules in the IDE settings.
 

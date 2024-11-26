@@ -11,17 +11,17 @@ import (
 	"log"
 	"os"
 
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
-	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
+	//"github.com/aws/aws-lambda-go/events"
+	//ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 )
 
-var ginLambda *ginadapter.GinLambda
+//var ginLambda *ginadapter.GinLambda
 
-func init() {
+func run() {
 	// Load environment variables
 	utils.LoadEnv()
+	log.Printf("Starting run in environment '%s'", os.Getenv("ENV"))
 
 	// Initialize database connection
 	//dbPool := database.InitDB()
@@ -53,7 +53,15 @@ func init() {
 	http.InitializeRoutes(router, playerRepo, userRepo)
 
 	// Create the adapter
-	ginLambda = ginadapter.New(router)
+	//ginLambda = ginadapter.New(router)
+
+	// Start server
+	if err := router.Run(":80"); err != nil {
+		log.Printf("Failed to start server on port 80. Try running with elevated privileges (sudo/administrator)")
+		// Fallback to 8080 if 80 fails
+		log.Printf("Falling back to port 8080...")
+		log.Fatal(router.Run(":8080"))
+	}
 }
 
 func initRepositories(client *dynamodb.Client) (repository2.PlayerRepository, repository2.UserRepository) { //playerRepo := repository.NewPlayerRepositoryPg(dbPool)
@@ -63,10 +71,20 @@ func initRepositories(client *dynamodb.Client) (repository2.PlayerRepository, re
 	return playerRepo, userRepo
 }
 
-func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return ginLambda.ProxyWithContext(ctx, req)
-}
+//func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+//	log.Printf("Received request: Method=%s, Path=%s", req.HTTPMethod, req.Path)
+//	log.Printf("Request headers: %+v", req.Headers)
+//
+//	resp, err := ginLambda.ProxyWithContext(ctx, req)
+//	if err != nil {
+//		log.Printf("Error handling request: %v", err)
+//	}
+//	log.Printf("Response: StatusCode=%d", resp.StatusCode)
+//
+//	return resp, err
+//}
 
 func main() {
-	lambda.Start(Handler)
+	//lambda.Start(Handler)
+	run()
 }

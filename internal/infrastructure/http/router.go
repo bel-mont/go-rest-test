@@ -8,6 +8,14 @@ import (
 )
 
 func InitializeRoutes(router *gin.Engine, playerRepo repository.PlayerRepository, userRepo repository.UserRepository) {
+	// Add this health check route
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status":  "ok",
+			"message": "Server is running",
+		})
+	})
+
 	// Initialize API handlers
 	playerHandler := api.NewPlayerHandler(playerRepo)
 	userHandler := api.NewUserHandler(userRepo)

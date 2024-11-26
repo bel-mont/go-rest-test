@@ -33,3 +33,5 @@ go.work.sum
 #Serverless files
 /node_modules/
 .serverless/
+volume/
+cmd/server/bootstrap
