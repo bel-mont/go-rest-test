@@ -33,6 +33,7 @@ func run() {
 
 	// In local environment, create tables and seed data
 	if os.Getenv("ENV") == "local" {
+		log.Println("Creating tables and seeding data...")
 		if err := database.CreateTables(ctx, dynamoClient); err != nil {
 			log.Printf("Error creating tables: %v", err)
 		}
