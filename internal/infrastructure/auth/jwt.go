@@ -16,12 +16,12 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// GenerateJWT generates a new JWT for the specified user ID.
-func GenerateJWT(userID string) (string, error) {
+// GenerateToken generates a new JWT for the specified user ID with a specified expiration duration.
+func GenerateToken(userID string, duration time.Duration) (string, error) {
 	claims := &Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
 			Issuer:    "server",
 		},
 	}

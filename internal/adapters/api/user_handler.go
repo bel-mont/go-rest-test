@@ -54,20 +54,13 @@ func (h UserHandler) Signup(c *gin.Context) {
 	}
 
 	// Save the user in the database
-	_, err = h.userRepo.CreateUser(context.Background(), user)
+	newUser, err := h.userRepo.CreateUser(context.Background(), user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
-	token, err := auth.GenerateJWT(user.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
-		return
-	}
-
-	// Set the token as a secure, HTTP-only cookie
-	c.SetCookie(auth.AuthTokenCookieName, token, 3600, "/", "", true, true) // Expires in 1 hour, secure, HTTP-only
+	auth.SetTokenCookies(c, newUser.ID)
 
 	c.Header("HX-Redirect", "/replay")
 	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
@@ -97,14 +90,7 @@ func (h UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := auth.GenerateJWT(user.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
-		return
-	}
-
-	// Set the token as a secure, HTTP-only cookie
-	c.SetCookie(auth.AuthTokenCookieName, token, 3600, "/", "", true, true) // Expires in 1 hour, secure, HTTP-only
+	auth.SetTokenCookies(c, user.ID)
 
 	// Set HX-Redirect header to trigger a redirect in HTMX
 	c.Header("HX-Redirect", "/replay")
