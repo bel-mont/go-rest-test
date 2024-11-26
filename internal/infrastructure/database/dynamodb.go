@@ -12,6 +12,14 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
+// TableInfo holds the information needed to create a DynamoDB table.
+type TableInfo struct {
+	Name       string
+	Attributes []types.AttributeDefinition
+	KeySchema  []types.KeySchemaElement
+	GSI        []types.GlobalSecondaryIndex
+}
+
 // InitDynamoDB initializes the appropriate DynamoDB client based on the environment
 func InitDynamoDB(ctx context.Context) *dynamodb.Client {
 	if os.Getenv("ENV") == env.EnvLocal {
@@ -65,118 +73,78 @@ func InitProductionDynamoDB(ctx context.Context) *dynamodb.Client {
 	return client
 }
 
-// CreateTables creates all required DynamoDB tables
+// CreateTables creates all required DynamoDB tables.
 func CreateTables(ctx context.Context, client *dynamodb.Client) error {
-	tables := []struct {
-		name       string
-		attributes []types.AttributeDefinition
-		keySchema  []types.KeySchemaElement
-		gsi        []types.GlobalSecondaryIndex
-	}{
-		{
-			name: "Players",
-			attributes: []types.AttributeDefinition{
-				{
-					AttributeName: aws.String("id"),
-					AttributeType: types.ScalarAttributeTypeS,
-				},
-				{
-					AttributeName: aws.String("username"),
-					AttributeType: types.ScalarAttributeTypeS,
-				},
-			},
-			keySchema: []types.KeySchemaElement{
-				{
-					AttributeName: aws.String("id"),
-					KeyType:       types.KeyTypeHash,
-				},
-			},
-			gsi: []types.GlobalSecondaryIndex{
-				{
-					IndexName: aws.String("username-index"),
-					KeySchema: []types.KeySchemaElement{
-						{
-							AttributeName: aws.String("username"),
-							KeyType:       types.KeyTypeHash,
-						},
-					},
-					Projection: &types.Projection{
-						ProjectionType: types.ProjectionTypeAll,
-					},
-					ProvisionedThroughput: &types.ProvisionedThroughput{
-						ReadCapacityUnits:  aws.Int64(5),
-						WriteCapacityUnits: aws.Int64(5),
-					},
-				},
-			},
-		},
-		{
-			name: "Users",
-			attributes: []types.AttributeDefinition{
-				{
-					AttributeName: aws.String("id"),
-					AttributeType: types.ScalarAttributeTypeS,
-				},
-				{
-					AttributeName: aws.String("email"),
-					AttributeType: types.ScalarAttributeTypeS,
-				},
-			},
-			keySchema: []types.KeySchemaElement{
-				{
-					AttributeName: aws.String("id"),
-					KeyType:       types.KeyTypeHash,
-				},
-			},
-			gsi: []types.GlobalSecondaryIndex{
-				{
-					IndexName: aws.String("email-index"),
-					KeySchema: []types.KeySchemaElement{
-						{
-							AttributeName: aws.String("email"),
-							KeyType:       types.KeyTypeHash,
-						},
-					},
-					Projection: &types.Projection{
-						ProjectionType: types.ProjectionTypeAll,
-					},
-					ProvisionedThroughput: &types.ProvisionedThroughput{
-						ReadCapacityUnits:  aws.Int64(5),
-						WriteCapacityUnits: aws.Int64(5),
-					},
-				},
-			},
-		},
-	}
+	tables := getTableDefinitions()
 
 	for _, table := range tables {
-		// Check if table exists
-		exists, err := tableExists(ctx, client, table.name)
-		if err != nil {
+		if err := createTableIfNotExists(ctx, client, table); err != nil {
 			return err
 		}
-		if exists {
-			log.Printf("Table %s already exists", table.name)
-			continue
-		}
-
-		input := &dynamodb.CreateTableInput{
-			AttributeDefinitions:   table.attributes,
-			KeySchema:              table.keySchema,
-			TableName:              aws.String(table.name),
-			GlobalSecondaryIndexes: table.gsi,
-			ProvisionedThroughput: &types.ProvisionedThroughput{
-				ReadCapacityUnits:  aws.Int64(5),
-				WriteCapacityUnits: aws.Int64(5),
-			},
-		}
-
-		if _, err := client.CreateTable(ctx, input); err != nil {
-			return err
-		}
-		log.Printf("Created table %s", table.name)
 	}
+
 	return nil
+}
+
+// getTableDefinitions returns the definitions of the tables to be created.
+func getTableDefinitions() []TableInfo {
+	return []TableInfo{
+		{
+			Name: "Players",
+			Attributes: []types.AttributeDefinition{
+				{AttributeName: aws.String("id"), AttributeType: types.ScalarAttributeTypeS},
+				{AttributeName: aws.String("username"), AttributeType: types.ScalarAttributeTypeS},
+			},
+			KeySchema: []types.KeySchemaElement{
+				{AttributeName: aws.String("id"), KeyType: types.KeyTypeHash},
+			},
+			GSI: []types.GlobalSecondaryIndex{
+				createGSI("username-index", "username"),
+			},
+		},
+		{
+			Name: "Users",
+			Attributes: []types.AttributeDefinition{
+				{AttributeName: aws.String("id"), AttributeType: types.ScalarAttributeTypeS},
+				{AttributeName: aws.String("email"), AttributeType: types.ScalarAttributeTypeS},
+			},
+			KeySchema: []types.KeySchemaElement{
+				{AttributeName: aws.String("id"), KeyType: types.KeyTypeHash},
+			},
+			GSI: []types.GlobalSecondaryIndex{
+				createGSI("email-index", "email"),
+			},
+		},
+		{
+			Name: "Replays",
+			Attributes: []types.AttributeDefinition{
+				{AttributeName: aws.String("id"), AttributeType: types.ScalarAttributeTypeS},
+				{AttributeName: aws.String("user_id"), AttributeType: types.ScalarAttributeTypeS},
+			},
+			KeySchema: []types.KeySchemaElement{
+				{AttributeName: aws.String("id"), KeyType: types.KeyTypeHash},
+			},
+			GSI: []types.GlobalSecondaryIndex{
+				createGSI("user-id-index", "user_id"),
+			},
+		}}
+}
+
+// createGSI creates a Global Secondary Index.
+func createGSI(indexName, attributeName string) types.GlobalSecondaryIndex {
+	return types.GlobalSecondaryIndex{
+		IndexName: aws.String(indexName),
+		KeySchema: []types.KeySchemaElement{
+			{AttributeName: aws.String(attributeName), KeyType: types.KeyTypeHash},
+		},
+		Projection: &types.Projection{
+			ProjectionType: types.ProjectionTypeAll,
+		},
+		ProvisionedThroughput: &types.ProvisionedThroughput{
+			ReadCapacityUnits:  aws.Int64(5),
+			WriteCapacityUnits: aws.Int64(5),
+		},
+	}
 }
 
 // tableExists checks if a table exists in DynamoDB
@@ -192,6 +160,35 @@ func tableExists(ctx context.Context, client *dynamodb.Client, tableName string)
 		}
 	}
 	return false, nil
+}
+
+// createTableIfNotExists checks if the table exists and creates it if it doesn't.
+func createTableIfNotExists(ctx context.Context, client *dynamodb.Client, table TableInfo) error {
+	exists, err := tableExists(ctx, client, table.Name)
+	if err != nil {
+		return err
+	}
+	if exists {
+		log.Printf("Table %s already exists", table.Name)
+		return nil
+	}
+
+	input := &dynamodb.CreateTableInput{
+		AttributeDefinitions:   table.Attributes,
+		KeySchema:              table.KeySchema,
+		TableName:              aws.String(table.Name),
+		GlobalSecondaryIndexes: table.GSI,
+		ProvisionedThroughput: &types.ProvisionedThroughput{
+			ReadCapacityUnits:  aws.Int64(5),
+			WriteCapacityUnits: aws.Int64(5),
+		},
+	}
+
+	if _, err := client.CreateTable(ctx, input); err != nil {
+		return err
+	}
+	log.Printf("Created table %s", table.Name)
+	return nil
 }
 
 // SeedData seeds initial data into the tables

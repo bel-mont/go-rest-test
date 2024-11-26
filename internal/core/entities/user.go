@@ -13,3 +13,11 @@ type User struct {
 	// CreatedAt represents the timestamp when the user was created, stored in DynamoDB as 'created_at' and JSON as 'created_at'.
 	CreatedAt time.Time `dynamodbav:"created_at" json:"created_at"`
 }
+
+func (u User) GetID() string {
+	return u.ID
+}
+
+func (u User) SetID(id string) {
+	u.ID = id
+}

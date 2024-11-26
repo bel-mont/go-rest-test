@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"go-rest-test/internal/adapters/repository"
+	"go-rest-test/internal/core/entities"
 	repository2 "go-rest-test/internal/core/repository"
 	"go-rest-test/internal/infrastructure/database"
 	"go-rest-test/internal/infrastructure/http"
@@ -44,14 +45,14 @@ func run() {
 
 	// Initialize repositories
 	//playerRepo, userRepo := initRepositories(dbPool)
-	playerRepo, userRepo := initRepositories(dynamoClient)
+	playerRepo, userRepo, replayRepo := initRepositories(dynamoClient)
 
 	// Initialize router
 	router := gin.Default()
 	http.InitializeMiddlewares(router)
 
 	// Set up routes
-	http.InitializeRoutes(router, playerRepo, userRepo)
+	http.InitializeRoutes(router, playerRepo, userRepo, replayRepo)
 
 	// Create the adapter
 	//ginLambda = ginadapter.New(router)
@@ -65,11 +66,12 @@ func run() {
 	}
 }
 
-func initRepositories(client *dynamodb.Client) (repository2.PlayerRepository, repository2.UserRepository) { //playerRepo := repository.NewPlayerRepositoryPg(dbPool)
+func initRepositories(client *dynamodb.Client) (repository2.PlayerRepository, repository2.UserRepository, repository2.Repository[entities.Replay]) {
 	//userRepo := repository.NewUserRepositoryPg(dbPool)
 	playerRepo := repository.NewPlayerRepositoryDynamoDB(client)
 	userRepo := repository.NewUserRepositoryDynamoDB(client)
-	return playerRepo, userRepo
+	replayRepo := repository.NewReplayRepository(client)
+	return playerRepo, userRepo, replayRepo
 }
 
 //func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {

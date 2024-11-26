@@ -4,10 +4,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-rest-test/internal/adapters/api"
 	"go-rest-test/internal/adapters/web"
+	"go-rest-test/internal/core/entities"
 	"go-rest-test/internal/core/repository"
 )
 
-func InitializeRoutes(router *gin.Engine, playerRepo repository.PlayerRepository, userRepo repository.UserRepository) {
+func InitializeRoutes(router *gin.Engine, playerRepo repository.PlayerRepository, userRepo repository.UserRepository, replayRepo repository.Repository[entities.Replay]) {
 	// Add this health check route
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -24,7 +25,7 @@ func InitializeRoutes(router *gin.Engine, playerRepo repository.PlayerRepository
 	playerWebHandler := web.NewPlayerWebHandler(playerRepo)
 	userWebHandler := web.NewUserWebHandler()
 	homeWebHandler := web.NewHomeWebHandler()
-	replayWebHandler := web.NewReplayWebHandler()
+	replayWebHandler := web.NewReplayWebHandler(replayRepo)
 
 	// Register routes
 	setupAPIRoutes(router, playerHandler, userHandler)

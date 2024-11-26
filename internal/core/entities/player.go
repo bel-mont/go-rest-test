@@ -17,3 +17,11 @@ type Player struct {
 	// LastLogin is the last login time of the player.
 	LastLogin time.Time `dynamodbav:"last_login" json:"last_login"`
 }
+
+func (p Player) GetID() string {
+	return p.ID
+}
+
+func (p Player) SetID(id string) {
+	p.ID = id
+}

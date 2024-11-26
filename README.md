@@ -6,7 +6,11 @@
 
 ## Running 
 1. Start localstack with `docker-compose`
-2. Start your golang program
+2. Start your golang program `go run ./cmd/server/main.go`
+
+# TODO
+1. Switch to production Tailwind
+2. 
 
 
 # Troubleshooting
