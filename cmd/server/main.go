@@ -69,9 +69,9 @@ func run() {
 	}
 }
 
-func initRepositories(client *dynamodb.Client) (repository2.PlayerRepository, repository2.UserRepository, repository2.Repository[entities.Replay]) {
+func initRepositories(client *dynamodb.Client) (repository2.Repository[entities.Player], repository2.UserRepository, repository2.Repository[entities.Replay]) {
 	//userRepo := repository.NewUserRepositoryPg(dbPool)
-	playerRepo := repository.NewPlayerRepositoryDynamoDB(client)
+	playerRepo := repository.NewPlayerDynamoRepository(client)
 	userRepo := repository.NewUserDynamoRepository(client)
 	replayRepo := repository.NewReplayDynamoRepository(client)
 	return playerRepo, userRepo, replayRepo

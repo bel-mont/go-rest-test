@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"go-rest-test/internal/core/entities"
 	"go-rest-test/internal/core/repository"
 	"go-rest-test/internal/infrastructure/auth"
 	"go-rest-test/pkg/html"
@@ -11,10 +12,10 @@ import (
 )
 
 type PlayerWebHandler struct {
-	repo repository.PlayerRepository
+	repo repository.Repository[entities.Player]
 }
 
-func NewPlayerWebHandler(repo repository.PlayerRepository) PlayerWebHandler {
+func NewPlayerWebHandler(repo repository.Repository[entities.Player]) PlayerWebHandler {
 	return PlayerWebHandler{repo: repo}
 }
 
@@ -32,7 +33,7 @@ func (h PlayerWebHandler) RenderPlayersList(c *gin.Context) {
 	isAuthenticated := auth.IsUserAuthenticated(c)
 
 	// Retrieve players from the repository
-	players, err := h.repo.GetAllPlayers(context.Background())
+	players, err := h.repo.Scan(context.Background())
 	if err != nil {
 		err := tmpl.ExecuteTemplate(c.Writer, "players/list.gohtml", gin.H{"error": "Failed to retrieve players"})
 		if err != nil {

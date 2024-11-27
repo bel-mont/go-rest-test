@@ -9,10 +9,10 @@ import (
 )
 
 type PlayerHandler struct {
-	repo repository.PlayerRepository
+	repo repository.Repository[entities.Player]
 }
 
-func NewPlayerHandler(repo repository.PlayerRepository) PlayerHandler {
+func NewPlayerHandler(repo repository.Repository[entities.Player]) PlayerHandler {
 	return PlayerHandler{repo: repo}
 }
 
@@ -23,7 +23,7 @@ func (h PlayerHandler) CreatePlayer(c *gin.Context) {
 		return
 	}
 
-	id, err := h.repo.CreatePlayer(context.Background(), player)
+	id, err := h.repo.Create(context.Background(), player)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create player"})
 		return
@@ -34,7 +34,7 @@ func (h PlayerHandler) CreatePlayer(c *gin.Context) {
 
 func (h PlayerHandler) GetPlayerByID(c *gin.Context) {
 	id := c.Param("id")
-	player, err := h.repo.GetPlayerByID(context.Background(), id)
+	player, err := h.repo.Get(context.Background(), id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Player not found"})
 		return
@@ -51,7 +51,7 @@ func (h PlayerHandler) UpdatePlayer(c *gin.Context) {
 		return
 	}
 
-	err := h.repo.UpdatePlayer(context.Background(), player)
+	err := h.repo.Update(context.Background(), player)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update player"})
 		return
@@ -63,7 +63,7 @@ func (h PlayerHandler) UpdatePlayer(c *gin.Context) {
 func (h PlayerHandler) DeletePlayer(c *gin.Context) {
 	id := c.Param("id")
 
-	err := h.repo.DeletePlayer(context.Background(), id)
+	err := h.repo.Delete(context.Background(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete player"})
 		return
@@ -73,7 +73,7 @@ func (h PlayerHandler) DeletePlayer(c *gin.Context) {
 }
 
 func (h PlayerHandler) GetAllPlayers(c *gin.Context) {
-	players, err := h.repo.GetAllPlayers(context.Background())
+	players, err := h.repo.Scan(context.Background())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve players"})
 		return

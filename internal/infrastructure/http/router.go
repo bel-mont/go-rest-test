@@ -8,7 +8,7 @@ import (
 	"go-rest-test/internal/core/repository"
 )
 
-func InitializeRoutes(router *gin.Engine, playerRepo repository.PlayerRepository, userRepo repository.UserRepository, replayRepo repository.Repository[entities.Replay]) {
+func InitializeRoutes(router *gin.Engine, playerRepo repository.Repository[entities.Player], userRepo repository.UserRepository, replayRepo repository.Repository[entities.Replay]) {
 	// Add this health check route
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
