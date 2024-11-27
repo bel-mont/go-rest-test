@@ -23,6 +23,7 @@ func InitializeRoutes(router *gin.Engine, playerRepo repository.Repository[entit
 	playerHandler := api.NewPlayerHandler(playerRepo)
 	userHandler := api.NewUserHandler(userRepo)
 	replayUploadHandler := api.NewReplayUploadHandler(s3Client, replayRepo)
+	replayHandler := api.NewReplayHandler(s3Client, replayRepo)
 
 	// Initialize Web handlers
 	playerWebHandler := web.NewPlayerWebHandler(playerRepo)
@@ -31,11 +32,11 @@ func InitializeRoutes(router *gin.Engine, playerRepo repository.Repository[entit
 	replayWebHandler := web.NewReplayWebHandler(replayRepo)
 
 	// Register routes
-	setupAPIRoutes(router, playerHandler, userHandler, replayUploadHandler)
+	setupAPIRoutes(router, playerHandler, userHandler, replayUploadHandler, replayHandler)
 	setupWebRoutes(router, homeWebHandler, userWebHandler, playerWebHandler, replayWebHandler)
 }
 
-func setupAPIRoutes(router *gin.Engine, playerHandler api.PlayerHandler, userHandler api.UserHandler, replayUploadHandler api.ReplayUploadHandler) {
+func setupAPIRoutes(router *gin.Engine, playerHandler api.PlayerHandler, userHandler api.UserHandler, replayUploadHandler api.ReplayUploadHandler, replayHandler api.ReplayHandler) {
 	apiGroup := router.Group("/api")
 	{
 		apiGroup.POST("/players", playerHandler.CreatePlayer)
@@ -46,6 +47,7 @@ func setupAPIRoutes(router *gin.Engine, playerHandler api.PlayerHandler, userHan
 		apiGroup.POST("/signup", userHandler.Signup)
 		apiGroup.POST("/login", userHandler.Login)
 		apiGroup.POST("/logout", userHandler.Logout)
+		apiGroup.GET("/replay/:id/stream", replayHandler.StreamReplay)
 	}
 	apiRestrictedGroup := router.Group("/api/restricted")
 	apiRestrictedGroup.Use(middlewares.AuthMiddleware())
@@ -60,6 +62,8 @@ func setupWebRoutes(router *gin.Engine, homeWebHandler web.HomeWebHandler, userW
 	router.GET("/login", userWebHandler.RenderLoginForm)
 	router.GET("/players", playerWebHandler.RenderPlayersList)
 	router.GET("/replay", replayWebHandler.RenderIndex)
+	router.GET("/replays/:id", replayWebHandler.RenderViewPage)
+
 	userPagesGroup := router.Group("/u/")
 	userPagesGroup.Use(middlewares.AuthMiddleware())
 	{

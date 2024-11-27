@@ -73,3 +73,35 @@ func (h ReplayWebHandler) RenderUploadPage(c *gin.Context) {
 		return
 	}
 }
+
+func (h ReplayWebHandler) RenderViewPage(c *gin.Context) {
+	tmpl, err := html.BaseLayoutTemplate("web/views/replay/view.gohtml")
+	if err != nil {
+		log.Printf("Error loading view replay template: %v", err)
+		c.String(http.StatusInternalServerError, "Template error")
+		return
+	}
+
+	id := c.Param("id")
+	replay, err := h.replayRepo.Get(c.Request.Context(), id)
+	if err != nil {
+		log.Printf("Error fetching replay: %v", err)
+		c.String(http.StatusInternalServerError, "Replay not found")
+		return
+	}
+
+	isAuthenticated := auth.IsUserAuthenticated(c)
+
+	data := gin.H{
+		"title":             "View Replay",
+		"header":            "View Replay",
+		"UserAuthenticated": isAuthenticated,
+		"Replay":            replay,
+	}
+
+	err = tmpl.ExecuteTemplate(c.Writer, "replay/view.gohtml", data)
+	if err != nil {
+		log.Printf("Error executing view replay template: %v", err)
+		return
+	}
+}
