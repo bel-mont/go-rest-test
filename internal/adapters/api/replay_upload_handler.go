@@ -7,6 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
+	"go-rest-test/internal/core/entities"
+	"go-rest-test/internal/core/repository"
+	"go-rest-test/internal/infrastructure/auth"
 	"html/template"
 	"io"
 	"mime/multipart"
@@ -16,10 +19,11 @@ import (
 
 type ReplayUploadHandler struct {
 	s3Client *s3.Client
+	repo     repository.Repository[entities.Replay]
 }
 
-func NewReplayUploadHandler(s3Client *s3.Client) ReplayUploadHandler {
-	return ReplayUploadHandler{s3Client: s3Client}
+func NewReplayUploadHandler(s3Client *s3.Client, repo repository.Repository[entities.Replay]) ReplayUploadHandler {
+	return ReplayUploadHandler{s3Client: s3Client, repo: repo}
 }
 
 func (h ReplayUploadHandler) UploadHandler(c *gin.Context) {
@@ -82,6 +86,33 @@ func (h ReplayUploadHandler) UploadHandler(c *gin.Context) {
 		h.sendError(c, http.StatusInternalServerError, "Failed to upload file: "+err.Error(), isHtmx, tmpl)
 		return
 	}
+
+	userId, exists := c.Get(auth.UserIDContextKey)
+	if !exists {
+		h.sendError(c, http.StatusInternalServerError, "Failed to retrieve user ID", isHtmx, tmpl)
+		return
+	}
+	userIdStr, ok := userId.(string)
+	if !ok {
+		h.sendError(c, http.StatusInternalServerError, "User ID is not a valid string", isHtmx, tmpl)
+		return
+	}
+	fmt.Println("User ID: ", userIdStr)
+
+	replayEntity := entities.Replay{
+		UserID:     userIdStr,
+		UploadedAt: time.Now(),
+		S3Bucket:   bucketName,
+		S3Path:     uploadKey,
+		S3FileName: header.Filename,
+		S3FileSize: header.Size,
+	}
+	newReplay, err := h.repo.Create(context.Background(), replayEntity)
+	if err != nil {
+		h.sendError(c, http.StatusInternalServerError, "Failed to create replay: "+err.Error(), isHtmx, tmpl)
+		return
+	}
+	fmt.Println("Uploaded replay: ", newReplay.ID)
 
 	h.sendSuccess(c, header.Filename, isHtmx, tmpl)
 }

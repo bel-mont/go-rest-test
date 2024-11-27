@@ -18,7 +18,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// Verify the token
-		userID, err := auth.ValidateJWT(token)
+		claims, err := auth.ValidateJWT(token)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
@@ -26,7 +26,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// Store the user ID in context for the next handler
-		c.Set("userID", userID)
+		c.Set(auth.UserIDContextKey, claims.UserID)
 		c.Next()
 	}
 }

@@ -22,7 +22,7 @@ func InitializeRoutes(router *gin.Engine, playerRepo repository.Repository[entit
 	// Initialize API handlers
 	playerHandler := api.NewPlayerHandler(playerRepo)
 	userHandler := api.NewUserHandler(userRepo)
-	replayUploadHandler := api.NewReplayUploadHandler(s3Client)
+	replayUploadHandler := api.NewReplayUploadHandler(s3Client, replayRepo)
 
 	// Initialize Web handlers
 	playerWebHandler := web.NewPlayerWebHandler(playerRepo)
@@ -60,5 +60,9 @@ func setupWebRoutes(router *gin.Engine, homeWebHandler web.HomeWebHandler, userW
 	router.GET("/login", userWebHandler.RenderLoginForm)
 	router.GET("/players", playerWebHandler.RenderPlayersList)
 	router.GET("/replay", replayWebHandler.RenderIndex)
-	router.GET("/replay/upload", replayWebHandler.RenderUploadPage)
+	userPagesGroup := router.Group("/u/")
+	userPagesGroup.Use(middlewares.AuthMiddleware())
+	{
+		userPagesGroup.GET("/replay/upload", replayWebHandler.RenderUploadPage)
+	}
 }
