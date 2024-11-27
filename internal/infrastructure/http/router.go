@@ -52,4 +52,5 @@ func setupWebRoutes(router *gin.Engine, homeWebHandler web.HomeWebHandler, userW
 	router.GET("/login", userWebHandler.RenderLoginForm)
 	router.GET("/players", playerWebHandler.RenderPlayersList)
 	router.GET("/replay", replayWebHandler.RenderIndex)
+	router.GET("/replay/upload", replayWebHandler.RenderUploadPage)
 }

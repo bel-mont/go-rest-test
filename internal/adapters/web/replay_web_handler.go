@@ -50,3 +50,26 @@ func (h ReplayWebHandler) RenderIndex(c *gin.Context) {
 		return
 	}
 }
+
+func (h ReplayWebHandler) RenderUploadPage(c *gin.Context) {
+	tmpl, err := html.BaseLayoutTemplate("web/views/replay/upload.gohtml")
+	if err != nil {
+		log.Printf("Error loading upload replay template: %v", err)
+		c.String(http.StatusInternalServerError, "Template error")
+		return
+	}
+
+	isAuthenticated := auth.IsUserAuthenticated(c)
+
+	data := gin.H{
+		"title":             "Upload Replay",
+		"header":            "Upload Replay",
+		"UserAuthenticated": isAuthenticated,
+	}
+
+	err = tmpl.ExecuteTemplate(c.Writer, "replay/upload.gohtml", data)
+	if err != nil {
+		log.Printf("Error executing upload replay template: %v", err)
+		return
+	}
+}
