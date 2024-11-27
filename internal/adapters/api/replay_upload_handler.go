@@ -104,7 +104,7 @@ func (h ReplayUploadHandler) sendError(c *gin.Context, status int, message strin
 func (h ReplayUploadHandler) sendSuccess(c *gin.Context, filename string, isHtmx bool, tmpl *template.Template) {
 	message := fmt.Sprintf("Successfully uploaded %s", filename)
 	if isHtmx {
-		err := tmpl.ExecuteTemplate(c.Writer, "partials/upload-status.gohtml", gin.H{
+		err := tmpl.ExecuteTemplate(c.Writer, "components/upload-status.gohtml", gin.H{
 			"success": true,
 			"message": message,
 		})

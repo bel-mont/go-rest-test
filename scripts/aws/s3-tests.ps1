@@ -1,6 +1,8 @@
 # List all objects in the bucket
 aws --endpoint-url=http://localhost:4566 s3 ls s3://fg-analyzer-replay-uploads
 
+# list all objets in a folder
+
 # List with more details
 aws --endpoint-url=http://localhost:4566 s3 ls s3://fg-analyzer-replay-uploads --recursive
 
@@ -18,3 +20,4 @@ aws --endpoint-url=http://localhost:4566 s3 rm s3://fg-analyzer-replay-uploads/a
 
 # Delete all files in bucket
 aws --endpoint-url=http://localhost:4566 s3 rm s3://fg-analyzer-replay-uploads --recursive
+
