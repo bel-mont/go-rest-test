@@ -10,7 +10,12 @@ import (
 	"go-rest-test/internal/infrastructure/middlewares"
 )
 
-func InitializeRoutes(router *gin.Engine, playerRepo repository.Repository[entities.Player], userRepo repository.UserRepository, replayRepo repository.Repository[entities.Replay], s3Client *s3.Client) {
+func InitializeRoutes(router *gin.Engine,
+	playerRepo repository.Repository[entities.Player],
+	userRepo repository.UserRepository,
+	replayRepo repository.Repository[entities.Replay],
+	uploadStateRepo repository.Repository[entities.MultipartUpload],
+	s3Client *s3.Client) {
 	// Add this health check route
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -22,7 +27,7 @@ func InitializeRoutes(router *gin.Engine, playerRepo repository.Repository[entit
 	// Initialize API handlers
 	playerHandler := api.NewPlayerHandler(playerRepo)
 	userHandler := api.NewUserHandler(userRepo)
-	replayUploadHandler := api.NewReplayUploadHandler(s3Client, replayRepo)
+	replayUploadHandler := api.NewReplayUploadHandler(s3Client, replayRepo, uploadStateRepo)
 	replayHandler := api.NewReplayHandler(s3Client, replayRepo)
 
 	// Initialize Web handlers
@@ -53,6 +58,13 @@ func setupAPIRoutes(router *gin.Engine, playerHandler api.PlayerHandler, userHan
 	apiRestrictedGroup.Use(middlewares.AuthMiddleware())
 	{
 		apiRestrictedGroup.POST("/replay/upload", replayUploadHandler.UploadHandler)
+
+		// Multipart upload endpoints
+		apiRestrictedGroup.POST("/replay/upload/init", replayUploadHandler.InitUploadHandler)
+		apiRestrictedGroup.GET("/replay/upload/part-url", replayUploadHandler.GetUploadPartURL)
+		apiRestrictedGroup.POST("/replay/upload/complete-part", replayUploadHandler.CompletePart)
+		apiRestrictedGroup.POST("/replay/upload/complete", replayUploadHandler.CompleteUpload)
+
 	}
 }
 

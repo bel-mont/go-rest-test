@@ -127,7 +127,23 @@ func getTableDefinitions() []TableInfo {
 			GSI: []types.GlobalSecondaryIndex{
 				createGSI("user-id-index", "user_id"),
 			},
-		}}
+		},
+		{
+			Name: "MultipartUploads",
+			Attributes: []types.AttributeDefinition{
+				{AttributeName: aws.String("id"), AttributeType: types.ScalarAttributeTypeS},
+				{AttributeName: aws.String("user_id"), AttributeType: types.ScalarAttributeTypeS},
+				{AttributeName: aws.String("status"), AttributeType: types.ScalarAttributeTypeS},
+			},
+			KeySchema: []types.KeySchemaElement{
+				{AttributeName: aws.String("id"), KeyType: types.KeyTypeHash},
+			},
+			GSI: []types.GlobalSecondaryIndex{
+				createGSI("user-id-index", "user_id"),
+				createGSI("status-index", "status"), // Useful for cleanup of abandoned uploads
+			},
+		},
+	}
 }
 
 // createGSI creates a Global Secondary Index.

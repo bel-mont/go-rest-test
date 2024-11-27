@@ -1,46 +1,213 @@
 {{ define "replay/upload.gohtml" }}
-    {{ template "layouts/base-header.gohtml" . }}
+{{ template "layouts/base-header.gohtml" . }}
 
-    <div class="container mx-auto px-4 py-8">
-      <h1 class="text-2xl font-bold text-gray-900 mb-6">Upload New Replay</h1>
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Upload New Replay</h1>
 
-      <div id="upload-form-container">
-        <form hx-post="/api/restricted/replay/upload"
-              hx-encoding="multipart/form-data"
-              hx-target="#upload-status"
-              hx-swap="innerHTML"
-              hx-indicator="#loading"
-              class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+  <div id="upload-form-container">
+    <form id="upload-form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="title">Replay Title</label>
+        <input id="title" name="title" type="text" placeholder="Enter replay title"
+               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+      </div>
 
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="title">Replay Title</label>
-            <input id="title" name="title" type="text" placeholder="Enter replay title"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-          </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="file">Replay File (MP4)</label>
+        <input id="file" name="file" type="file" accept=".mp4"
+               class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:border-gray-500" required>
+      </div>
 
-          <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="file">Replay File (MP4)</label>
-            <input id="file" name="file" type="file" accept=".mp4"
-                   class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:border-gray-500" required>
-          </div>
+      <div class="flex items-center justify-between">
+        <button id="upload-button" type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          Upload Replay
+        </button>
+        <button id="resume-button" type="button"
+                class="hidden bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+          Resume Upload
+        </button>
+      </div>
+    </form>
 
-          <div class="flex items-center justify-between">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-              Upload Replay
-            </button>
-          </div>
-        </form>
-
-        <!-- Loading indicator -->
-        <div id="loading" class="htmx-indicator flex items-center justify-center py-4 hidden">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <span class="ml-2 text-gray-600">Uploading...</span>
-        </div>
-
-        <!-- Status messages container -->
-        <div id="upload-status" class="mt-4"></div>
+    <!-- Progress container -->
+    <div id="progress-container" class="hidden mt-4">
+      <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+      </div>
+      <div class="text-sm text-gray-600 mt-2">
+        <span id="progress-text">0%</span> uploaded
+        (<span id="parts-uploaded">0</span>/<span id="total-parts">0</span> parts)
       </div>
     </div>
 
-    {{ template "layouts/base-footer.gohtml" . }}
+    <div id="upload-status" class="mt-4"></div>
+  </div>
+</div>
+
+<script>
+    const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+    let currentUpload = null;
+
+    // Load existing upload from localStorage
+    function loadExistingUpload() {
+        const saved = localStorage.getItem('currentUpload');
+        if (saved) {
+            currentUpload = JSON.parse(saved);
+            document.getElementById('resume-button').classList.remove('hidden');
+            document.getElementById('progress-container').classList.remove('hidden');
+            updateProgress(Object.keys(currentUpload.completedParts).length, currentUpload.totalParts);
+        }
+    }
+
+    function updateProgress(completed, total) {
+        const progress = (completed / total * 100).toFixed(1);
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+        document.getElementById('progress-text').textContent = `${progress}%`;
+        document.getElementById('parts-uploaded').textContent = completed;
+        document.getElementById('total-parts').textContent = total;
+    }
+
+    async function uploadPart(file, partNumber, uploadId) {
+        // Get presigned URL
+        const urlResponse = await fetch(`/api/restricted/replay/upload/part-url?uploadId=${uploadId}&partNumber=${partNumber}`);
+        const urlData = await urlResponse.json();
+
+        // Calculate chunk range
+        const start = (partNumber - 1) * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, file.size);
+        const chunk = file.slice(start, end);
+
+        // Upload chunk directly to S3
+        const uploadResponse = await fetch(urlData.url, {
+            method: 'PUT',
+            body: chunk
+        });
+
+        if (!uploadResponse.ok) throw new Error(`Failed to upload part ${partNumber}`);
+
+        // Get ETag from response headers
+        const etag = uploadResponse.headers.get('ETag');
+
+        // Notify backend of completed part
+        await fetch('/api/restricted/replay/upload/complete-part', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                uploadId: uploadId,
+                partNumber: partNumber,
+                etag: etag
+            })
+        });
+
+        return etag;
+    }
+
+    async function handleUpload(isResume = false) {
+        try {
+            const file = isResume ? currentUpload.file : document.getElementById('file').files[0];
+            const title = isResume ? currentUpload.title : document.getElementById('title').value;
+
+            if (!isResume) {
+                const totalParts = Math.ceil(file.size / CHUNK_SIZE);
+
+                // Initialize upload
+                const initResponse = await fetch('/api/restricted/replay/upload/init', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fileName: file.name,
+                        fileSize: file.size,
+                        totalParts: totalParts
+                    })
+                });
+
+                if (!initResponse.ok) throw new Error('Failed to initialize upload');
+                const initData = await initResponse.json();
+
+                currentUpload = {
+                    uploadId: initData.uploadId,
+                    file: file,
+                    title: title,
+                    totalParts: totalParts,
+                    completedParts: {},
+                    fileName: file.name
+                };
+
+                // Show progress container
+                document.getElementById('progress-container').classList.remove('hidden');
+            }
+
+            // Save current state
+            localStorage.setItem('currentUpload', JSON.stringify(currentUpload));
+
+            // Upload all remaining parts
+            const promises = [];
+            for (let partNumber = 1; partNumber <= currentUpload.totalParts; partNumber++) {
+                if (!currentUpload.completedParts[partNumber]) {
+                    try {
+                        const etag = await uploadPart(currentUpload.file, partNumber, currentUpload.uploadId);
+                        currentUpload.completedParts[partNumber] = etag;
+                        localStorage.setItem('currentUpload', JSON.stringify(currentUpload));
+                        updateProgress(Object.keys(currentUpload.completedParts).length, currentUpload.totalParts);
+                    } catch (error) {
+                        console.error(`Failed to upload part ${partNumber}:`, error);
+                        document.getElementById('upload-status').innerHTML = `
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                            Upload interrupted. You can resume later.
+                        </div>
+                    `;
+                        return; // Allow resuming from this point
+                    }
+                }
+            }
+
+            // Complete the upload
+            const completeResponse = await fetch('/api/restricted/replay/upload/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uploadId: currentUpload.uploadId
+                })
+            });
+
+            if (!completeResponse.ok) throw new Error('Failed to complete upload');
+
+            // Clear stored upload data
+            localStorage.removeItem('currentUpload');
+            currentUpload = null;
+
+            // Hide resume button and show success message
+            document.getElementById('resume-button').classList.add('hidden');
+            document.getElementById('upload-status').innerHTML = `
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                Upload completed successfully!
+            </div>
+        `;
+
+        } catch (error) {
+            console.error('Upload error:', error);
+            document.getElementById('upload-status').innerHTML = `
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                ${error.message} - You can resume the upload later.
+            </div>
+        `;
+            saveUploadProgress();
+        }
+    }
+
+    // Event Listeners
+    document.getElementById('upload-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await handleUpload(false);
+    });
+
+    document.getElementById('resume-button').addEventListener('click', async function() {
+        await handleUpload(true);
+    });
+
+    // Load existing upload on page load
+    loadExistingUpload();
+</script>
+{{ template "layouts/base-footer.gohtml" . }}
 {{ end }}

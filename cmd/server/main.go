@@ -52,14 +52,14 @@ func run() {
 
 	// Initialize repositories
 	//playerRepo, userRepo := initRepositories(dbPool)
-	playerRepo, userRepo, replayRepo := initRepositories(dynamoClient)
+	playerRepo, userRepo, replayRepo, multipartUploadRepo := initRepositories(dynamoClient)
 
 	// Initialize router
 	router := gin.Default()
 	http.InitializeMiddlewares(router)
 
 	// Set up routes
-	http.InitializeRoutes(router, playerRepo, userRepo, replayRepo, s3Client)
+	http.InitializeRoutes(router, playerRepo, userRepo, replayRepo, multipartUploadRepo, s3Client)
 
 	// Serve static files
 	router.Static("/web/static", "./web/static")
@@ -76,12 +76,17 @@ func run() {
 	}
 }
 
-func initRepositories(client *dynamodb.Client) (repository2.Repository[entities.Player], repository2.UserRepository, repository2.Repository[entities.Replay]) {
+func initRepositories(client *dynamodb.Client) (
+	repository2.Repository[entities.Player],
+	repository2.UserRepository,
+	repository2.Repository[entities.Replay],
+	repository2.Repository[entities.MultipartUpload]) {
 	//userRepo := repository.NewUserRepositoryPg(dbPool)
 	playerRepo := repository.NewPlayerDynamoRepository(client)
 	userRepo := repository.NewUserDynamoRepository(client)
 	replayRepo := repository.NewReplayDynamoRepository(client)
-	return playerRepo, userRepo, replayRepo
+	multipartUploadRepo := repository.NewMultipartUploadDynamoRepository(client)
+	return playerRepo, userRepo, replayRepo, multipartUploadRepo
 }
 
 //func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
