@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
-	repository2 "go-rest-test/internal/adapters/repository"
 	"go-rest-test/internal/core/entities"
 	"go-rest-test/internal/core/repository"
 	"go-rest-test/internal/infrastructure/auth"
@@ -35,7 +34,7 @@ func (h UserHandler) Signup(c *gin.Context) {
 
 	// Check if user already exists
 	_, err := h.userRepo.GetUserByEmail(context.Background(), input.Email)
-	if !errors.Is(err, repository2.ErrUserNotFound) {
+	if !errors.Is(err, repository.ErrItemNotFound) {
 		c.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
 		return
 	}
@@ -54,7 +53,7 @@ func (h UserHandler) Signup(c *gin.Context) {
 	}
 
 	// Save the user in the database
-	newUser, err := h.userRepo.CreateUser(context.Background(), user)
+	newUser, err := h.userRepo.Create(context.Background(), user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return

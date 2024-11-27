@@ -2,7 +2,11 @@ package repository
 
 import (
 	"context"
+	"errors"
 )
+
+// ErrItemNotFound indicates that the requested item does not exist in the repository.
+var ErrItemNotFound = errors.New("item not found")
 
 // Entity interface defines the basic requirements for an entity
 type Entity interface {

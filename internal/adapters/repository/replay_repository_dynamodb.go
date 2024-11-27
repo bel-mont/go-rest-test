@@ -5,6 +5,6 @@ import (
 	"go-rest-test/internal/core/entities"
 )
 
-func NewReplayRepository(client *dynamodb.Client) BaseDynamoRepository[entities.Replay] {
+func NewReplayDynamoRepository(client *dynamodb.Client) BaseDynamoRepository[entities.Replay] {
 	return NewBaseDynamoRepository[entities.Replay](client, "Replays")
 }

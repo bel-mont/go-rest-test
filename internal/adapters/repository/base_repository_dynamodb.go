@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -11,8 +10,6 @@ import (
 	"github.com/google/uuid"
 	repositoryInterface "go-rest-test/internal/core/repository"
 )
-
-var ErrItemNotFound = errors.New("item not found")
 
 // BaseDynamoRepository provides generic CRUD operations for DynamoDB
 type BaseDynamoRepository[T repositoryInterface.Entity] struct {
@@ -69,7 +66,7 @@ func (r BaseDynamoRepository[T]) Get(ctx context.Context, id string) (T, error) 
 	}
 
 	if result.Item == nil {
-		return empty, ErrItemNotFound
+		return empty, repositoryInterface.ErrItemNotFound
 	}
 
 	var item T
