@@ -49,6 +49,7 @@ func (h UserWebHandler) RenderLoginForm(c *gin.Context) {
 		"web/views/users/login.gohtml",
 		"web/views/layouts/base-header.gohtml",
 		"web/views/layouts/base-footer.gohtml",
+		"web/components/error/modal.gohtml",
 	)
 	if err != nil {
 		log.Printf("Error loading login template: %v", err)

@@ -7,7 +7,8 @@
         <div>
           <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
         </div>
-        <form class="mt-8 space-y-6" hx-post="/api/login" hx-swap="none">
+        <form class="mt-8 space-y-6" hx-post="/api/login" hx-target="#error-modal-content" hx-swap="innerHTML">
+          <div id="error-modal-content"></div>
           <div class="rounded-md shadow-sm -space-y-px">
             <div>
               <label for="email" class="sr-only">Email address</label>
@@ -32,6 +33,15 @@
         </form>
       </div>
     </div>
+
+    <!-- Include the error modal component -->
+    {{ template "components/modal.gohtml" . }}
+
     {{ end }}
     {{ template "layouts/base-footer.gohtml" . }}
+
+    <script type="module">
+        import { handleAfterRequest } from "/web/static/js/errorHandler.js";
+        document.addEventListener("htmx:afterRequest", handleAfterRequest);
+    </script>
 {{ end }}

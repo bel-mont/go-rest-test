@@ -54,6 +54,9 @@ func run() {
 	// Set up routes
 	http.InitializeRoutes(router, playerRepo, userRepo, replayRepo)
 
+	// Serve static files
+	router.Static("/web/static", "./web/static")
+
 	// Create the adapter
 	//ginLambda = ginadapter.New(router)
 
