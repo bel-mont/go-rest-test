@@ -1,0 +1,7 @@
+{{ define "components/upload-status.gohtml" }}
+  <div class="mt-4 p-4 rounded-lg {{ if .success }}bg-green-100{{ else }}bg-red-100{{ end }}">
+    <p class="{{ if .success }}text-green-700{{ else }}text-red-700{{ end }}">
+        {{ .message }}
+    </p>
+  </div>
+{{ end }}

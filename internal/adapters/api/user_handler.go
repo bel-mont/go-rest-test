@@ -55,7 +55,7 @@ func (h UserHandler) Signup(c *gin.Context) {
 	// Save the user in the database
 	newUser, err := h.userRepo.Create(context.Background(), user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "message": err.Error()})
 		return
 	}
 

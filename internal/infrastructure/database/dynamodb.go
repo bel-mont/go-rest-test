@@ -32,7 +32,7 @@ func InitDynamoDB(ctx context.Context) *dynamodb.Client {
 func InitLocalDynamoDB(ctx context.Context) *dynamodb.Client {
 	// Basic configuration
 	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithRegion("local"),
+		config.WithRegion(os.Getenv("AWS_REGION")),
 		config.WithClientLogMode(aws.LogRequestWithBody|aws.LogResponseWithBody),
 	)
 	if err != nil {

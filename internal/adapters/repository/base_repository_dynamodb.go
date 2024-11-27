@@ -27,14 +27,18 @@ func NewBaseDynamoRepository[T repositoryInterface.Entity](client *dynamodb.Clie
 
 // Create creates a new item
 func (r BaseDynamoRepository[T]) Create(ctx context.Context, item T) (T, error) {
-	// Generate UUID if not set
-	if item.GetID() == "" {
-		item.SetID(uuid.New().String())
-	}
-
 	av, err := attributevalue.MarshalMap(item)
 	if err != nil {
 		return item, fmt.Errorf("failed to marshal item: %w", err)
+	}
+
+	// Generate and set UUID directly in the attribute map
+	if av["id"].(*types.AttributeValueMemberS).Value == "" {
+		newUUID, err := uuid.NewUUID()
+		if err != nil {
+			return item, fmt.Errorf("failed to generate UUID: %w", err)
+		}
+		av["id"] = &types.AttributeValueMemberS{Value: newUUID.String()}
 	}
 
 	input := &dynamodb.PutItemInput{
@@ -47,7 +51,13 @@ func (r BaseDynamoRepository[T]) Create(ctx context.Context, item T) (T, error) 
 		return item, fmt.Errorf("failed to create item: %w", err)
 	}
 
-	return item, nil
+	// Unmarshal the updated item with the new ID
+	var newItem T
+	if err := attributevalue.UnmarshalMap(av, &newItem); err != nil {
+		return item, fmt.Errorf("failed to unmarshal updated item: %w", err)
+	}
+
+	return newItem, nil
 }
 
 // Get retrieves an item by ID

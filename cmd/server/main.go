@@ -8,6 +8,7 @@ import (
 	repository2 "go-rest-test/internal/core/repository"
 	"go-rest-test/internal/infrastructure/database"
 	"go-rest-test/internal/infrastructure/http"
+	"go-rest-test/internal/infrastructure/storage"
 	utils "go-rest-test/pkg/util"
 	"log"
 	"os"
@@ -32,6 +33,9 @@ func run() {
 	ctx := context.Background()
 	dynamoClient := database.InitDynamoDB(ctx)
 
+	// Initialize S3 client
+	s3Client := storage.InitAWSClient()
+
 	// In local environment, create tables and seed data
 	if os.Getenv("ENV") == "local" {
 		log.Println("Creating tables and seeding data...")
@@ -41,6 +45,9 @@ func run() {
 		if err := database.SeedData(ctx, dynamoClient); err != nil {
 			log.Printf("Error seeding data: %v", err)
 		}
+
+		// Add buckets
+		storage.CreateBuckets(s3Client)
 	}
 
 	// Initialize repositories
@@ -52,7 +59,7 @@ func run() {
 	http.InitializeMiddlewares(router)
 
 	// Set up routes
-	http.InitializeRoutes(router, playerRepo, userRepo, replayRepo)
+	http.InitializeRoutes(router, playerRepo, userRepo, replayRepo, s3Client)
 
 	// Serve static files
 	router.Static("/web/static", "./web/static")

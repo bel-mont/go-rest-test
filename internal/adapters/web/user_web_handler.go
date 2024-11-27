@@ -3,7 +3,6 @@ package web
 import (
 	"go-rest-test/internal/infrastructure/auth"
 	"go-rest-test/pkg/html"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -45,10 +44,8 @@ func (h UserWebHandler) RenderSignupForm(c *gin.Context) {
 // RenderLoginForm renders the login form HTML page.
 func (h UserWebHandler) RenderLoginForm(c *gin.Context) {
 	// Parse the login form template with header and footer
-	tmpl, err := template.ParseFiles(
+	tmpl, err := html.BaseLayoutTemplate(
 		"web/views/users/login.gohtml",
-		"web/views/layouts/base-header.gohtml",
-		"web/views/layouts/base-footer.gohtml",
 		"web/components/error/modal.gohtml",
 	)
 	if err != nil {
