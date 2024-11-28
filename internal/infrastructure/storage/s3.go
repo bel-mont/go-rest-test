@@ -13,7 +13,7 @@ import (
 func InitAWSClient() *s3.Client {
 	cfg, err := config.LoadDefaultConfig(
 		context.Background(),
-		config.WithClientLogMode(aws.LogRequestWithBody|aws.LogResponseWithBody),
+		//config.WithClientLogMode(aws.LogRequestWithBody|aws.LogResponseWithBody),
 		config.WithRegion(os.Getenv("AWS_REGION")),
 	)
 	if err != nil {

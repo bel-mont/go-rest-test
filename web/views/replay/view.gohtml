@@ -17,8 +17,10 @@
                   class="w-full h-full object-contain"
                   controls
                   poster="/api/placeholder/640/360"
+                  preload="auto"
+                  playsinline
           >
-            <source src="/api/replays/{{ .Replay.ID }}/stream" type="video/mp4">
+            <source src="/api/replay/{{ .Replay.ID }}/stream" type="video/mp4">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -68,14 +70,14 @@
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
                 <div class="space-x-4">
                   <button
-                          hx-delete="/api/replays/{{ .Replay.ID }}"
+                          hx-delete="/api/replay/{{ .Replay.ID }}"
                           hx-confirm="Are you sure you want to delete this replay?"
                           class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                   >
                     Delete Replay
                   </button>
                   <a
-                          href="/api/replays/{{ .Replay.ID }}/download"
+                          href="/api/replay/{{ .Replay.ID }}/download"
                           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block"
                   >
                     Download Replay
