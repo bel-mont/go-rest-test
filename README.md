@@ -4,9 +4,10 @@
 2. For windows, install "Makefile" through something like Chocolatey.
 3. Python
 
-## Running 
+## Running  
 1. Start localstack with `docker-compose`
-2. Start your golang program `go run ./cmd/server/main.go`
+2. Add CORS to the bucket `aws --endpoint-url=http://localhost:4566 s3api put-bucket-cors --bucket fg-analyzer-replay-uploads --cors-configuration file://localstack/s3-cors.json` 
+3. Start your golang program `go run ./cmd/server/main.go`
 
 # TODO
 1. Switch to production Tailwind

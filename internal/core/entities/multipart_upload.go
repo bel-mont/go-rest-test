@@ -2,6 +2,12 @@ package entities
 
 import "time"
 
+const (
+	MultipartUploadStatusInProgress = "in_progress"
+	MultipartUploadStatusCompleted  = "completed"
+	MultipartUploadStatusAborted    = "aborted"
+)
+
 type MultipartUpload struct {
 	ID             string         `json:"id" dynamodbav:"id"`
 	UserID         string         `json:"user_id" dynamodbav:"user_id"`

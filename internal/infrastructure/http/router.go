@@ -64,7 +64,6 @@ func setupAPIRoutes(router *gin.Engine, playerHandler api.PlayerHandler, userHan
 		apiRestrictedGroup.GET("/replay/upload/part-url", replayUploadHandler.GetUploadPartURL)
 		apiRestrictedGroup.POST("/replay/upload/complete-part", replayUploadHandler.CompletePart)
 		apiRestrictedGroup.POST("/replay/upload/complete", replayUploadHandler.CompleteUpload)
-
 	}
 }
 

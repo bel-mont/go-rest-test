@@ -66,6 +66,7 @@ func (h ReplayUploadHandler) InitUploadHandler(c *gin.Context) {
 	uploadInfo := entities.MultipartUpload{
 		ID:             *result.UploadId,
 		S3Key:          key,
+		Status:         entities.MultipartUploadStatusInProgress,
 		S3Bucket:       bucketName,
 		FileName:       req.FileName,
 		FileSize:       req.FileSize,
